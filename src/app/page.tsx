@@ -2509,7 +2509,7 @@ export default function EmmiCRMApp() {
       )}
 
       {/* Main Container: Wide Max-W-5XL on Desktop, Responsive Mobile-first */}
-      <div className="w-full max-w-5xl min-h-screen flex flex-col pb-24 mx-auto px-3 sm:px-6 relative">
+      <div className="w-full max-w-5xl min-h-screen flex flex-col pb-28 sm:pb-32 mx-auto px-3 sm:px-6 relative">
         {/* Floating Toast Notification for instant smooth feedback */}
         {toastMessage && (
           <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-[#7b1e3a] text-white text-xs font-bold shadow-2xl flex items-center gap-2 animate-fadeIn border border-white/20">
@@ -3293,162 +3293,6 @@ export default function EmmiCRMApp() {
                   </div>
                 )}
               </div>
-
-              {/* Quick Follow-up Modal with Date & Next Schedule */}
-              {modalCustomer && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-                  <div className="w-full max-w-md p-5 rounded-3xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-2xl space-y-3.5 max-h-[90vh] overflow-y-auto">
-                    {/* Header */}
-                    <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-white/10">
-                      <div>
-                        <h4 className="text-sm font-black text-[#230c14] dark:text-white flex items-center gap-1.5">
-                          <CheckCircle2 size={16} className="text-emerald-600" />
-                          <span>កត់ត្រាការ Follow Up អតិថិជន</span>
-                        </h4>
-                        <p className="text-[11px] text-gray-500 mt-0.5">
-                          {modalCustomer.name} · 📞 {modalCustomer.phone} · 📦 {modalCustomer.boxes} ប្រអប់
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setModalCustomer(null)}
-                        className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:text-black dark:text-gray-400"
-                      >
-                        <X size={16} />
-                      </button>
-                    </div>
-
-                    {/* Grid: Follow-up Date & Next Follow-up Date */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                      <div>
-                        <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
-                          📅 បាន Follow Up ថ្ងៃណា:
-                        </label>
-                        <input
-                          type="date"
-                          value={followUpModalDate}
-                          onChange={(e) => setFollowUpModalDate(e.target.value)}
-                          className="w-full h-10 px-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none focus:border-[#7b1e3a]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-bold text-[#7b1e3a] dark:text-pink-300 mb-1 flex items-center gap-1">
-                          <Calendar size={13} />
-                          <span>🗓️ ត្រូវ Follow ថ្ងៃណាទៀត:</span>
-                        </label>
-                        <input
-                          type="date"
-                          value={followUpNextDate}
-                          onChange={(e) => setFollowUpNextDate(e.target.value)}
-                          className="w-full h-10 px-3 rounded-xl bg-[#fbe9ee]/50 dark:bg-white/5 border border-[#7b1e3a]/30 dark:border-white/10 text-xs font-black text-[#7b1e3a] dark:text-pink-300 outline-none focus:border-[#7b1e3a]"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Quick Presets for Next Follow-up Date */}
-                    <div className="space-y-1">
-                      <span className="text-[10px] text-gray-400 font-medium">ជ្រើសរើសរហ័សសម្រាប់លើកក្រោយ:</span>
-                      <div className="flex flex-wrap gap-1.5 text-xs">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const d = new Date(Date.now() + 7 * 24 * 3600 * 1000);
-                            setFollowUpNextDate(d.toISOString().slice(0, 10));
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-[#7b1e3a] hover:text-white text-[11px] font-bold transition-all"
-                        >
-                          +7 ថ្ងៃ (១ សប្ដាហ៍)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const d = new Date(Date.now() + 14 * 24 * 3600 * 1000);
-                            setFollowUpNextDate(d.toISOString().slice(0, 10));
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-[#7b1e3a] hover:text-white text-[11px] font-bold transition-all"
-                        >
-                          +14 ថ្ងៃ (២ សប្ដាហ៍)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const d = new Date(Date.now() + 3 * 24 * 3600 * 1000);
-                            setFollowUpNextDate(d.toISOString().slice(0, 10));
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-[#7b1e3a] hover:text-white text-[11px] font-bold transition-all"
-                        >
-                          +3 ថ្ងៃ (ឆាប់ៗ)
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Contact Method & Status */}
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          វិធីទាក់ទង:
-                        </label>
-                        <select
-                          value={followUpMethod}
-                          onChange={(e) => setFollowUpMethod(e.target.value)}
-                          className="w-full h-10 px-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none"
-                        >
-                          <option value="តាមឆាត">💬 តាមឆាត (Telegram/FB)</option>
-                          <option value="តាមតេ">📞 តាមតេ (Call)</option>
-                          <option value="ជួបផ្ទាល់">👥 ជួបផ្ទាល់</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1">
-                          ស្ថានភាពភ្ញៀវ:
-                        </label>
-                        <select
-                          value={followUpStatus}
-                          onChange={(e) => setFollowUpStatus(e.target.value)}
-                          className="w-full h-10 px-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none"
-                        >
-                          <option value="បាន Follow Up រួច">✅ បាន Follow Up រួច</option>
-                          <option value="កំពុងប្រើប្រាស់">💊 កំពុងប្រើប្រាស់</option>
-                          <option value="ជិតអស់ផលិតផល">🔥 ជិតអស់ផលិតផល</option>
-                          <option value="ចង់ទិញថែម">📦 ចង់ទិញថែម</option>
-                          <option value="មិនទាន់ឆ្លើយតប">⏳ មិនទាន់ឆ្លើយតប</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Note Area */}
-                    <div>
-                      <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
-                        កំណត់សម្គាល់ការសន្ទនា (សរសេរពាក្យសម្ដីភ្ញៀវ):
-                      </label>
-                      <textarea
-                        value={quickNote}
-                        onChange={(e) => setQuickNote(e.target.value)}
-                        placeholder="ឧ. ភ្ញៀវប្រាប់ថាបាត់ឈឺចង្កេះ ជិតអស់ប្រអប់ទី១ ចង់កុម្ម៉ង់ថែម..."
-                        className="w-full h-20 p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs outline-none focus:border-[#7b1e3a]"
-                      />
-                    </div>
-
-                    {/* Modal Action Buttons */}
-                    <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-white/10">
-                      <button
-                        onClick={() => setModalCustomer(null)}
-                        className="flex-1 h-11 rounded-xl bg-gray-100 dark:bg-white/10 text-xs font-bold hover:bg-gray-200"
-                      >
-                        បោះបង់
-                      </button>
-                      <button
-                        onClick={handleSaveFollowup}
-                        className="flex-1 h-11 rounded-xl bg-[#7b1e3a] hover:bg-[#66162e] text-white text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all"
-                      >
-                        <Check size={16} />
-                        <span>រក្សាទុក Follow Up (+1 ដង)</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
@@ -3669,7 +3513,7 @@ export default function EmmiCRMApp() {
         </main>
 
         {/* Floating Bottom Navigation Bar (matching user screenshots 1, 3, 4) */}
-        <nav className="fixed bottom-0 left-0 right-0 z-40 flex justify-center pointer-events-none pb-2 px-3">
+        <nav className="fixed bottom-3.5 sm:bottom-5 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
           <div className="w-full max-w-md h-16 rounded-full bg-white/95 dark:bg-[#2a111a]/95 backdrop-blur-md border border-[#eadadd] dark:border-white/10 shadow-xl flex items-center justify-around px-2 pointer-events-auto">
             {/* 1. Dashboard */}
             <button
@@ -3748,6 +3592,171 @@ export default function EmmiCRMApp() {
             </button>
           </div>
         </nav>
+
+        {/* Quick Follow-up Modal with Date & Next Schedule - ROOT LEVEL (Fixed z-[100] for Perfect Mobile Display) */}
+        {modalCustomer && (
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+            {/* Backdrop click to close */}
+            <div className="absolute inset-0" onClick={() => setModalCustomer(null)} />
+
+            <div className="relative w-full max-w-lg p-5 rounded-t-3xl sm:rounded-3xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-2xl space-y-3.5 max-h-[88dvh] overflow-y-auto overscroll-contain">
+              {/* Mobile Drag Indicator Bar */}
+              <div className="w-12 h-1.5 rounded-full bg-gray-300 dark:bg-white/20 mx-auto -mt-1 mb-2 sm:hidden" />
+
+              {/* Header */}
+              <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-white/10">
+                <div>
+                  <h4 className="text-sm font-black text-[#230c14] dark:text-white flex items-center gap-1.5">
+                    <CheckCircle2 size={16} className="text-emerald-600" />
+                    <span>កត់ត្រាការ Follow Up អតិថិជន</span>
+                  </h4>
+                  <p className="text-[11px] text-gray-500 mt-0.5">
+                    {modalCustomer.name} · 📞 {modalCustomer.phone} · 📦 {modalCustomer.boxes} ប្រអប់
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setModalCustomer(null)}
+                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:text-black dark:text-gray-400 cursor-pointer"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              {/* Grid: Follow-up Date & Next Follow-up Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                    📅 បាន Follow Up ថ្ងៃណា:
+                  </label>
+                  <input
+                    type="date"
+                    value={followUpModalDate}
+                    onChange={(e) => setFollowUpModalDate(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none focus:border-[#7b1e3a]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-[#7b1e3a] dark:text-pink-300 mb-1 flex items-center gap-1">
+                    <Calendar size={13} />
+                    <span>🗓️ ត្រូវ Follow ថ្ងៃណាទៀត:</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={followUpNextDate}
+                    onChange={(e) => setFollowUpNextDate(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl bg-[#fbe9ee]/50 dark:bg-white/5 border border-[#7b1e3a]/30 dark:border-white/10 text-xs font-black text-[#7b1e3a] dark:text-pink-300 outline-none focus:border-[#7b1e3a]"
+                  />
+                </div>
+              </div>
+
+              {/* Quick Presets for Next Follow-up Date */}
+              <div className="space-y-1">
+                <span className="text-[10px] text-gray-400 font-medium">ជ្រើសរើសរហ័សសម្រាប់លើកក្រោយ:</span>
+                <div className="flex flex-wrap gap-1.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date(Date.now() + 7 * 24 * 3600 * 1000);
+                      setFollowUpNextDate(d.toISOString().slice(0, 10));
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-[#7b1e3a] hover:text-white text-[11px] font-bold transition-all active:scale-95 cursor-pointer"
+                  >
+                    +7 ថ្ងៃ (១ សប្ដាហ៍)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date(Date.now() + 14 * 24 * 3600 * 1000);
+                      setFollowUpNextDate(d.toISOString().slice(0, 10));
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-[#7b1e3a] hover:text-white text-[11px] font-bold transition-all active:scale-95 cursor-pointer"
+                  >
+                    +14 ថ្ងៃ (២ សប្ដាហ៍)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const d = new Date(Date.now() + 3 * 24 * 3600 * 1000);
+                      setFollowUpNextDate(d.toISOString().slice(0, 10));
+                    }}
+                    className="px-2.5 py-1.5 rounded-lg bg-gray-100 dark:bg-white/10 hover:bg-[#7b1e3a] hover:text-white text-[11px] font-bold transition-all active:scale-95 cursor-pointer"
+                  >
+                    +3 ថ្ងៃ (ឆាប់ៗ)
+                  </button>
+                </div>
+              </div>
+
+              {/* Contact Method & Status */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    វិធីទាក់ទង:
+                  </label>
+                  <select
+                    value={followUpMethod}
+                    onChange={(e) => setFollowUpMethod(e.target.value)}
+                    className="w-full h-10 px-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none cursor-pointer"
+                  >
+                    <option value="តាមឆាត">💬 តាមឆាត (Telegram/FB)</option>
+                    <option value="តាមតេ">📞 តាមតេ (Call)</option>
+                    <option value="ជួបផ្ទាល់">👥 ជួបផ្ទាល់</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    ស្ថានភាពភ្ញៀវ:
+                  </label>
+                  <select
+                    value={followUpStatus}
+                    onChange={(e) => setFollowUpStatus(e.target.value)}
+                    className="w-full h-10 px-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none cursor-pointer"
+                  >
+                    <option value="បាន Follow Up រួច">✅ បាន Follow Up រួច</option>
+                    <option value="កំពុងប្រើប្រាស់">💊 កំពុងប្រើប្រាស់</option>
+                    <option value="ជិតអស់ផលិតផល">🔥 ជិតអស់ផលិតផល</option>
+                    <option value="ចង់ទិញថែម">📦 ចង់ទិញថែម</option>
+                    <option value="មិនទាន់ឆ្លើយតប">⏳ មិនទាន់ឆ្លើយតប</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Note Area */}
+              <div>
+                <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  កំណត់សម្គាល់ការសន្ទនា (សរសេរពាក្យសម្ដីភ្ញៀវ):
+                </label>
+                <textarea
+                  value={quickNote}
+                  onChange={(e) => setQuickNote(e.target.value)}
+                  placeholder="ឧ. ភ្ញៀវប្រាប់ថាបាត់ឈឺចង្កេះ ជិតអស់ប្រអប់ទី១ ចង់កុម្ម៉ង់ថែម..."
+                  className="w-full h-20 p-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs outline-none focus:border-[#7b1e3a]"
+                />
+              </div>
+
+              {/* Modal Action Buttons */}
+              <div className="flex gap-2 pt-2 pb-1 border-t border-gray-100 dark:border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setModalCustomer(null)}
+                  className="flex-1 h-11 rounded-xl bg-gray-100 dark:bg-white/10 text-xs font-bold hover:bg-gray-200 active:scale-98 transition-all cursor-pointer"
+                >
+                  បោះបង់
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveFollowup}
+                  className="flex-1 h-11 rounded-xl bg-[#7b1e3a] hover:bg-[#66162e] text-white text-xs font-bold shadow-md flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer"
+                >
+                  <Check size={16} />
+                  <span>រក្សាទុក Follow Up (+1 ដង)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
