@@ -121,6 +121,7 @@ const ORDER_FORM_URL =
 
 export default function EmmiCRMApp() {
   // Authentication & session
+  const [authChecked, setAuthChecked] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<UserOption>(ALL_USERS[1]); // Default Sok Chakriya
   const [adminPassword, setAdminPassword] = useState<string>("");
@@ -203,12 +204,24 @@ export default function EmmiCRMApp() {
   const [reports, setReports] = useState<Report[]>([]);
   const [followUpEvents, setFollowUpEvents] = useState<FollowUpEvent[]>([]);
 
-  // Load saved local storage followups
+  // Load saved local storage session & followups (Permanent Login Persistence)
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("emmi_followups");
-      if (saved) setFollowUpNotes(JSON.parse(saved));
-    } catch {}
+      const savedAuth = localStorage.getItem("emmi_auth_session");
+      if (savedAuth) {
+        const parsed = JSON.parse(savedAuth);
+        if (parsed.isLoggedIn) {
+          setIsLoggedIn(true);
+          if (parsed.currentUser) setCurrentUser(parsed.currentUser);
+          if (parsed.currentRole) setCurrentRole(parsed.currentRole);
+          if (parsed.adminViewMode) setAdminViewMode(parsed.adminViewMode);
+        }
+      }
+      const savedFollowups = localStorage.getItem("emmi_followups");
+      if (savedFollowups) setFollowUpNotes(JSON.parse(savedFollowups));
+    } catch {} finally {
+      setAuthChecked(true);
+    }
   }, []);
 
   // Sync dark mode
@@ -280,6 +293,17 @@ export default function EmmiCRMApp() {
           setAdminViewMode("admin");
           setIsLoggedIn(true);
           setAdminPassword("");
+          try {
+            localStorage.setItem(
+              "emmi_auth_session",
+              JSON.stringify({
+                isLoggedIn: true,
+                currentUser: "EMMI Admin",
+                currentRole: "admin",
+                adminViewMode: "admin",
+              })
+            );
+          } catch {}
         } else {
           setLoginError("Password មិនត្រឹមត្រូវទេ! (សាកល្បង Emmi@1111)");
         }
@@ -293,6 +317,16 @@ export default function EmmiCRMApp() {
       setCurrentUser(selectedUser.name);
       setCurrentRole("seller");
       setIsLoggedIn(true);
+      try {
+        localStorage.setItem(
+          "emmi_auth_session",
+          JSON.stringify({
+            isLoggedIn: true,
+            currentUser: selectedUser.name,
+            currentRole: "seller",
+          })
+        );
+      } catch {}
     }
   };
 
@@ -301,6 +335,9 @@ export default function EmmiCRMApp() {
     setDrawerOpen(false);
     setAdminPassword("");
     setLoginError("");
+    try {
+      localStorage.removeItem("emmi_auth_session");
+    } catch {}
   };
 
   // Reset pagination when customer filter tab or search changes
@@ -1061,6 +1098,18 @@ export default function EmmiCRMApp() {
         r.date === datesInfo.todayStr
     );
   }, [reports, currentUser, datesInfo.todayStr]);
+
+  // While verifying persistent login from localStorage, show clean smooth loader
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen bg-[#fcf8f9] dark:bg-[#1c0a10] flex items-center justify-center font-khmer">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 rounded-full border-3 border-[#7b1e3a] border-t-transparent animate-spin" />
+          <p className="text-xs text-[#7b1e3a] dark:text-pink-300 font-bold">កំពុងបើកដំណើរការ EMMI CRM...</p>
+        </div>
+      </div>
+    );
+  }
 
   // ==========================================
   // RENDER: LOGIN SCREEN (matching user shots 5 & 6)

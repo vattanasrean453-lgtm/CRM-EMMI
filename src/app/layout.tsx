@@ -1,9 +1,24 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#7b1e3a",
+};
 
 export const metadata: Metadata = {
   title: "EMMI Sales CRM",
   description: "Mobile-first sales follow-up and reporting workspace for EMMI",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "EMMI CRM",
+  },
   icons: {
     icon: "/emmi-logo.png",
     apple: "/emmi-logo.png",
@@ -18,8 +33,6 @@ export default function RootLayout({
   return (
     <html lang="km">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-        <meta name="theme-color" content="#7b1e3a" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -27,7 +40,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-khmer antialiased">{children}</body>
+      <body className="font-khmer antialiased overscroll-none select-none">{children}</body>
     </html>
   );
 }

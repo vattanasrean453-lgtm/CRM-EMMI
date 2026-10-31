@@ -109,6 +109,18 @@
 }
 
 /* Smooth Transitions & Animations */
+/* Prevent iOS Safari / Android auto-zooming on focus & make touch response native-app fast */
+html, body {
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
