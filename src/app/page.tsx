@@ -35,6 +35,7 @@ import {
   TrendingUp,
   Package,
   User,
+  Truck,
 } from "lucide-react";
 
 interface Customer {
@@ -122,6 +123,50 @@ const ALL_USERS: UserOption[] = [
 const ORDER_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSd_hP30dqB-F5gCV44AuxcftgmoDjo5zzkN-NSMiK-1rDEqPQ/viewform?usp=header";
 
+// Products matching Company Master Data
+const PRODUCT_OPTIONS = [
+  { id: "Emmi", name: "Emmi", desc: "ជំនួយសម្រស់នារី & សុខភាព", defaultPrice: "25$" },
+  { id: "Kidney Pro", name: "Kidney Pro", desc: "ជំនួយសុខភាពតម្រងនោម", defaultPrice: "25$" },
+  { id: "Pro D.O", name: "Pro D.O", desc: "ប្រូ ឌី.អូ (Pro D.O)", defaultPrice: "25$" },
+  { id: "Kidney+Pro D.O", name: "Kidney+Pro D.O", desc: "ឈុតរួមគ្នាពិសេស", defaultPrice: "50$" },
+];
+
+// Options matching Google Order Form schema (Exact standard teams)
+const TEAM_OPTIONS = [
+  "Vann_Sitha",
+  "Bech_Nora",
+  "Vann_Thida",
+  "V_Thida_Emmi",
+  "Chhorn_Dara",
+  "Meng_Samoeuk",
+  "Chhoun_Vireak",
+  "La_Thida",
+  "Nhem_Somrith",
+  "N_Somrith_Emmi",
+  "Yat_Virakyuth",
+  "Sarun_Chhayhor",
+  "S_Chhayhor_Emmi",
+  "Hong_Heng_Oeurn",
+  "Heng_Oeun_Emmi",
+  "Kru_Ta",
+  "Long_Vuthy",
+  "L_Vuthy_Emmi",
+  "Sorn_Sabda",
+  "Teng_Toeun",
+  "Vann_Theary",
+  "T_Toeun_Emmi",
+];
+
+const DELIVERY_OPTIONS = [
+  { id: "VET", label: "VET (វីរៈប៊ុនថាំ)", sub: "សេវាទូទៅ" },
+  { id: "J&T", label: "J&T Express", sub: "សេវាទូទៅ" },
+  { id: "Moto", label: "Moto (ម៉ូតូដឹក)", sub: "ភ្នំពេញ" },
+  { id: "VET(COD)", label: "VET (COD)", sub: "ប្រមូលប្រាក់ពេលដល់" },
+  { id: "J&T (COD)", label: "J&T (COD)", sub: "ប្រមូលប្រាក់ពេលដល់" },
+  { id: "Thai ✅COD", label: "Thai ✅COD", sub: "ប្រទេសថៃ (COD)" },
+  { id: "Thai ❌COD", label: "Thai ❌COD", sub: "ប្រទេសថៃ (វេរប្រាក់មុន)" },
+];
+
 const KHMER_MONTHS = [
   { value: 1, name: "មករា (01)" },
   { value: 2, name: "កុម្ភៈ (02)" },
@@ -161,7 +206,7 @@ export default function EmmiCRMApp() {
   const [currentRole, setCurrentRole] = useState<"admin" | "seller">("seller");
 
   // Navigation: Default to dashboard (which has full ranking)
-  const [activeTab, setActiveTab] = useState<"dashboard" | "customers" | "reports" | "ranking">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "customers" | "reports" | "ranking" | "order">("dashboard");
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
   // Appearance
@@ -233,6 +278,30 @@ export default function EmmiCRMApp() {
   const [activities, setActivities] = useState<string>("");
   const [submittingReport, setSubmittingReport] = useState<boolean>(false);
   const [reportSuccess, setReportSuccess] = useState<boolean>(false);
+
+  // Native In-App Order Form State (ទម្រង់កុម្មង់ទំនិញ VST)
+  const [orderDate, setOrderDate] = useState<string>(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  });
+  const [orderTeam, setOrderTeam] = useState<string>("Vann_Sitha");
+  const [orderSellerName, setOrderSellerName] = useState<string>("");
+  const [orderProductName, setOrderProductName] = useState<string>("Emmi");
+  const [orderSellerNo, setOrderSellerNo] = useState<string>("");
+  const [orderProductQty, setOrderProductQty] = useState<string>("1");
+  const [orderBonusQty, setOrderBonusQty] = useState<string>("0");
+  const [orderPrice, setOrderPrice] = useState<string>("");
+  const [orderReceiverPhone, setOrderReceiverPhone] = useState<string>("");
+  const [orderReceiverName, setOrderReceiverName] = useState<string>("");
+  const [orderAddress, setOrderAddress] = useState<string>("");
+  const [orderDelivery, setOrderDelivery] = useState<string>("VET");
+  const [orderNote, setOrderNote] = useState<string>("");
+  const [submittingOrder, setSubmittingOrder] = useState<boolean>(false);
+  const [orderSuccess, setOrderSuccess] = useState<boolean>(false);
+  const [orderError, setOrderError] = useState<string>("");
 
   // Performance & Smooth pagination for 1,000+ customers
   const [visibleCount, setVisibleCount] = useState<number>(20);
@@ -465,6 +534,81 @@ export default function EmmiCRMApp() {
       showToast("❌ មានបញ្ហាក្នុងការផ្ញើរបាយការណ៍");
     } finally {
       setSubmittingReport(false);
+    }
+  };
+
+  // Submit Native In-App Order Form directly to Google Form / Sheet
+  const handleSubmitOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!orderSellerName.trim()) {
+      showToast("សូមបញ្ចូលឈ្មោះអ្នកលក់!");
+      setOrderError("សូមបញ្ចូលឈ្មោះអ្នកលក់ (Seller Name)!");
+      return;
+    }
+    if (!orderPrice.trim()) {
+      showToast("សូមបញ្ចូលតម្លៃទំនិញ!");
+      setOrderError("សូមបញ្ចូលតម្លៃ (Price)!");
+      return;
+    }
+    if (!orderReceiverPhone.trim()) {
+      showToast("សូមបញ្ចូលលេខទូរស័ព្ទអ្នកទទួល!");
+      setOrderError("សូមបញ្ចូលលេខទូរស័ព្ទអ្នកទទួល (Receiver Phone)!");
+      return;
+    }
+    if (!orderAddress.trim()) {
+      showToast("សូមបញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន!");
+      setOrderError("សូមបញ្ចូលអាសយដ្ឋានដឹកជញ្ជូន (Address)!");
+      return;
+    }
+
+    setSubmittingOrder(true);
+    setOrderError("");
+    setOrderSuccess(false);
+
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          date: orderDate,
+          team: orderTeam || "Vann_Sitha",
+          sellerName: orderSellerName.trim(),
+          sellerNo: orderSellerNo,
+          productName: orderProductName,
+          productQuantity: orderProductQty,
+          price: orderPrice.trim(),
+          receiverPhone: orderReceiverPhone,
+          receiverName: orderReceiverName,
+          address: orderAddress,
+          deliveryMethod: orderDelivery,
+          note: orderNote,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setOrderSuccess(true);
+        showToast("✅ បានបញ្ជូនការកុម្ម៉ង់ចូល Google Sheet ជោគជ័យ!");
+        // Reset order-specific fields, preserve sellerName & team
+        setOrderReceiverPhone("");
+        setOrderReceiverName("");
+        setOrderAddress("");
+        setOrderNote("");
+        setOrderProductQty("1");
+        setOrderBonusQty("0");
+        setOrderPrice("");
+        setTimeout(() => setOrderSuccess(false), 7000);
+      } else {
+        const errMsg = data.message || "មិនអាចបញ្ជូនការកុម្ម៉ង់បានទេ សូមព្យាយាមម្តងទៀត!";
+        setOrderError(errMsg);
+        showToast("❌ " + errMsg);
+      }
+    } catch (err) {
+      console.error("Order submission error:", err);
+      setOrderError("បាត់បង់ការតភ្ជាប់អ៊ីនធឺណិត សូមព្យាយាមម្តងទៀត!");
+      showToast("❌ បាត់បង់ការតភ្ជាប់");
+    } finally {
+      setSubmittingOrder(false);
     }
   };
 
@@ -2729,6 +2873,360 @@ export default function EmmiCRMApp() {
   };
 
   // ==========================================
+  // TAB: NATIVE IN-APP ORDER FORM (ទម្រង់កុម្មង់ទំនិញ VST)
+  // Submits directly into Google Form -> Google Sheet
+  // ==========================================
+  const renderOrderTab = () => {
+    return (
+      <div className="space-y-4 animate-fadeIn pb-10">
+        {/* Header Card */}
+        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[#7b1e3a] via-[#8c2242] to-[#5a1428] text-white shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-44 h-44 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-pink-100 text-[10px] font-bold uppercase tracking-wider mb-2">
+                <ShoppingBag size={12} />
+                <span>EMMI • ORDER SYSTEM</span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                <span>ទម្រង់កុម្មង់ទំនិញ VST</span>
+              </h2>
+              <p className="text-xs text-pink-100/80 mt-1 max-w-md">
+                បំពេញទិន្នន័យកុម្ម៉ង់ខាងក្រោម វានឹងលោតចូល Google Sheet ការកុម្ម៉ង់ស្តង់ដាដោយស្វ័យប្រវត្តិ។
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 self-start sm:self-center">
+              <a
+                href={ORDER_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs border border-white/10 transition-all cursor-pointer"
+                title="បើកមើល Google Form ដើម"
+              >
+                <span>Google Form</span>
+                <ExternalLink size={12} />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Team Badge */}
+          <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-pink-200/90 font-medium">ថ្នាក់ដឹកនាំកំណត់ទុក៖</span>
+            <span className="px-2.5 py-1 rounded-lg bg-amber-400/20 text-amber-200 font-bold border border-amber-300/30">
+              ⭐ {orderTeam}
+            </span>
+            <span className="text-pink-200/90 ml-2 font-medium">អ្នកលក់៖</span>
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-200 font-bold border border-emerald-400/30 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              {currentUser}
+            </span>
+          </div>
+        </div>
+
+        {/* Success Alert */}
+        {orderSuccess && (
+          <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 shadow-sm flex items-start gap-3 animate-fadeIn">
+            <CheckCircle2 size={20} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <div className="flex-1 text-xs">
+              <p className="font-bold text-sm">✅ បានបញ្ជូនការកុម្ម៉ង់ដោយជោគជ័យ!</p>
+              <p className="mt-0.5 text-emerald-700 dark:text-emerald-300">
+                ទិន្នន័យបានកត់ត្រាចូលទៅក្នុង Google Sheet ការកុម្ម៉ង់ស្តង់ដារួចរាល់។ អ្នកអាចបន្តកុម្ម៉ង់បន្ថែមទៀតបាន។
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Error Alert */}
+        {orderError && (
+          <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 shadow-sm flex items-start gap-3 animate-fadeIn">
+            <AlertCircle size={20} className="text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+            <div className="flex-1 text-xs">
+              <p className="font-bold text-sm">❌ មិនអាចបញ្ជូនបាន</p>
+              <p className="mt-0.5 text-red-700 dark:text-red-300">{orderError}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Main Form - Arranged exactly matching the Standard Google Form */}
+        <form
+          onSubmit={handleSubmitOrder}
+          className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-sm space-y-5"
+        >
+          {/* Question 1: Date */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ១. កាលបរិច្ឆេទ(Date) <span className="text-red-500">*</span>
+            </label>
+            {renderDateInputBox(orderDate, setOrderDate)}
+          </div>
+
+          {/* Question 2: Team */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ២. ថ្នាក់ដឹកនាំ(Team) <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <select
+                value={orderTeam}
+                onChange={(e) => setOrderTeam(e.target.value)}
+                className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+              >
+                {TEAM_OPTIONS.map((t) => (
+                  <option key={t} value={t} className="text-gray-900 dark:text-white">
+                    {t === "Vann_Sitha" ? `⭐ ${t} (Default)` : t}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Question 3: Seller Name */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ៣. ឈ្មោះអ្នកលក់ <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={orderSellerName}
+              onChange={(e) => setOrderSellerName(e.target.value)}
+              placeholder="វាយឈ្មោះអ្នកលក់..."
+              className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+            />
+          </div>
+
+          {/* Question 4: Seller No */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ៤. លេខអ្នកលក់(Seller No)
+            </label>
+            <input
+              type="text"
+              value={orderSellerNo}
+              onChange={(e) => setOrderSellerNo(e.target.value)}
+              placeholder="លេខទូរស័ព្ទ ឬកូដអ្នកលក់"
+              className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+            />
+          </div>
+
+          {/* Question 5: Product & Quantity */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-3.5">
+            {/* 5.1 Select Product */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
+                  ៥. រើសមុខផលិតផល (Product) <span className="text-red-500">*</span>
+                </label>
+                <span className="text-xs font-black text-[#7b1e3a] dark:text-pink-400">
+                  {orderProductName}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {PRODUCT_OPTIONS.map((prod) => {
+                  const isSelected = orderProductName === prod.id;
+                  return (
+                    <button
+                      key={prod.id}
+                      type="button"
+                      onClick={() => setOrderProductName(prod.id)}
+                      className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                        isSelected
+                          ? "border-[#7b1e3a] bg-[#7b1e3a]/10 dark:bg-[#7b1e3a]/30 shadow-xs ring-2 ring-[#7b1e3a]"
+                          : "border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
+                          {prod.name}
+                        </span>
+                        {isSelected && <Check size={14} className="text-[#7b1e3a] dark:text-pink-400 font-bold" />}
+                      </div>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                        {prod.desc}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 5.2 Quantity */}
+            <div className="pt-2.5 border-t border-gray-200/60 dark:border-white/10">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
+                  ចំនួនប្រអប់ (Quantity) <span className="text-red-500">*</span>
+                </label>
+                <span className="text-xs font-black text-[#7b1e3a] dark:text-pink-400">
+                  {orderProductName} × {orderProductQty} ប្រអប់
+                </span>
+              </div>
+              <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map((qty) => (
+                  <button
+                    key={qty}
+                    type="button"
+                    onClick={() => setOrderProductQty(qty)}
+                    className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                      orderProductQty === qty
+                        ? "bg-[#7b1e3a] text-white shadow-sm ring-2 ring-[#7b1e3a]/30 scale-102"
+                        : "bg-white dark:bg-[#341420] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-100"
+                    }`}
+                  >
+                    {qty}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Question 6: Price */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ៦. តម្លៃ(Price) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={orderPrice}
+              onChange={(e) => setOrderPrice(e.target.value)}
+              placeholder="វាយតម្លៃលក់ (ឧ. 25$)"
+              className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+            />
+          </div>
+
+          {/* Question 7: Receiver No */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ៧. លេខអ្នកទទួល(Receiver No) <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                <Phone size={15} />
+              </div>
+              <input
+                type="tel"
+                required
+                value={orderReceiverPhone}
+                onChange={(e) => setOrderReceiverPhone(e.target.value)}
+                placeholder="លេខទូរស័ព្ទអ្នកទទួល (ឧ. 0976818615)"
+                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+              />
+            </div>
+          </div>
+
+          {/* Question 8: Recipient */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ៨. ឈ្មោះអ្នកទទួល(Recipient)
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                <User size={15} />
+              </div>
+              <input
+                type="text"
+                value={orderReceiverName}
+                onChange={(e) => setOrderReceiverName(e.target.value)}
+                placeholder="ឈ្មោះអ្នកទទួល (ប្រសិនបើមាន)"
+                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+              />
+            </div>
+          </div>
+
+          {/* Question 9: Address */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ៩. អាសយដ្ឋាន(Address) <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute top-3 left-3 flex items-start pointer-events-none text-gray-400">
+                <MapPin size={16} />
+              </div>
+              <textarea
+                required
+                rows={2}
+                value={orderAddress}
+                onChange={(e) => setOrderAddress(e.target.value)}
+                placeholder="ផ្ទះលេខ... ផ្លូវ... ឃុំ/សង្កាត់... ស្រុក/ខណ្ឌ... ខេត្ត/រាជធានី..."
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+              />
+            </div>
+          </div>
+
+          {/* Question 10: Delivery */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-2">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ១០. ដឹកជញ្ជូនតាម(Delivery) <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {DELIVERY_OPTIONS.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setOrderDelivery(opt.id)}
+                  className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                    orderDelivery === opt.id
+                      ? "border-[#7b1e3a] bg-[#7b1e3a]/10 dark:bg-[#7b1e3a]/30 shadow-xs ring-1 ring-[#7b1e3a]"
+                      : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-gray-800 dark:text-gray-100">
+                      {opt.id}
+                    </span>
+                    {orderDelivery === opt.id && (
+                      <Check size={14} className="text-[#7b1e3a] dark:text-pink-400 font-bold" />
+                    )}
+                  </div>
+                  <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 truncate">
+                    {opt.sub}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Question 11: Note */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
+            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
+              ១១. ចំណាំ(Note)
+            </label>
+            <textarea
+              rows={2}
+              value={orderNote}
+              onChange={(e) => setOrderNote(e.target.value)}
+              placeholder="ចំណាំបន្ថែមសម្រាប់ទំនិញ ឬការដឹកជញ្ជូន..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={submittingOrder}
+              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#7b1e3a] to-[#9c254d] hover:from-[#66162e] hover:to-[#851c3f] active:scale-98 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              {submittingOrder ? (
+                <>
+                  <RefreshCw size={16} className="animate-spin" />
+                  <span>កំពុងបញ្ជូន...</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag size={17} />
+                  <span>បញ្ជូនការកុម្ម៉ង់ (Submit)</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    );
+  };
+
+  // ==========================================
   // RENDER: MAIN APPLICATION (Logged In)
 
   // ==========================================
@@ -2932,16 +3430,25 @@ export default function EmmiCRMApp() {
                   )}
                 </button>
 
-                <a
-                  href={ORDER_FORM_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-sm text-white/80 hover:bg-white/10 transition-all"
+                <button
+                  onClick={() => {
+                    setActiveTab("order");
+                    setDrawerOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all ${
+                    activeTab === "order"
+                      ? "bg-white text-[#7b1e3a] font-bold shadow-sm"
+                      : "text-white/80 hover:bg-white/10"
+                  }`}
                 >
-                  <ShoppingBag size={18} />
-                  <span>{language === "en" ? "Place Order" : "កុម្ម៉ង់ទំនិញ"}</span>
-                  <ExternalLink size={14} className="ml-auto opacity-60" />
-                </a>
+                  <div className="flex items-center gap-3.5">
+                    <ShoppingBag size={18} />
+                    <span>{language === "en" ? "Order Form (VST)" : "ទម្រង់កុម្មង់ទំនិញ VST"}</span>
+                  </div>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-semibold">
+                    Sheet
+                  </span>
+                </button>
 
                 <button
                   onClick={() => {
@@ -3027,7 +3534,9 @@ export default function EmmiCRMApp() {
                     ? "ចំណាត់ថ្នាក់"
                     : activeTab === "customers"
                     ? "បញ្ជីអតិថិជន"
-                    : "របាយការណ៍"}
+                    : activeTab === "reports"
+                    ? "របាយការណ៍"
+                    : "ទម្រង់កុម្មង់ទំនិញ VST"}
                 </p>
               </div>
             </div>
@@ -3987,6 +4496,11 @@ export default function EmmiCRMApp() {
               </div>
             </div>
           )}
+
+          {/* ==================================================== */}
+          {/* TAB 6: ORDER FORM (ទម្រង់កុម្មង់ទំនិញ VST)             */}
+          {/* ==================================================== */}
+          {activeTab === "order" && renderOrderTab()}
         </main>
 
         {/* Floating Bottom Navigation Bar (matching user screenshots 1, 3, 4) */}
@@ -4030,16 +4544,19 @@ export default function EmmiCRMApp() {
 
             {/* 3. Center Order Button (Elevated Circle) */}
             <div className="relative -top-3">
-              <a
-                href={ORDER_FORM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="កុម្ម៉ង់ទំនិញ"
-                className="w-[52px] h-[52px] rounded-full bg-[#7b1e3a] hover:bg-[#66162e] active:scale-95 text-white flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-[#2a111a] transition-all"
+              <button
+                type="button"
+                onClick={() => setActiveTab("order")}
+                title="ទម្រង់កុម្មង់ទំនិញ VST"
+                className={`w-[54px] h-[54px] rounded-full flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-[#2a111a] transition-all active:scale-95 cursor-pointer ${
+                  activeTab === "order"
+                    ? "bg-gradient-to-tr from-[#982245] to-[#c73e65] text-white ring-4 ring-[#7b1e3a]/30 scale-105"
+                    : "bg-[#7b1e3a] hover:bg-[#66162e] text-white"
+                }`}
               >
                 <ShoppingBag size={20} />
                 <span className="text-[9px] font-bold">{language === "en" ? "Order" : "កុម្ម៉ង់"}</span>
-              </a>
+              </button>
             </div>
 
             {/* 4. Reports */}
