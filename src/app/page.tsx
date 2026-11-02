@@ -167,6 +167,7 @@ export default function EmmiCRMApp() {
   // Appearance
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [fontSize, setFontSize] = useState<"sm" | "md" | "lg">("md");
+  const [language, setLanguage] = useState<"km" | "en">("km");
 
   // Ranking filters: ថ្ងៃនេះ | ម្សិលមិញ | ខែនេះ
   const [rankingPeriod, setRankingPeriod] = useState<"today" | "yesterday" | "monthly">("monthly");
@@ -266,6 +267,10 @@ export default function EmmiCRMApp() {
       }
       const savedFollowups = localStorage.getItem("emmi_followups");
       if (savedFollowups) setFollowUpNotes(JSON.parse(savedFollowups));
+      const savedLang = localStorage.getItem("emmi_language");
+      if (savedLang === "en" || savedLang === "km") setLanguage(savedLang);
+      const savedFont = localStorage.getItem("emmi_font_size");
+      if (savedFont === "sm" || savedFont === "md" || savedFont === "lg") setFontSize(savedFont);
     } catch {} finally {
       setAuthChecked(true);
     }
@@ -279,6 +284,36 @@ export default function EmmiCRMApp() {
       document.documentElement.removeAttribute("data-theme");
     }
   }, [darkMode]);
+
+  // Sync standardized font size
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      if (fontSize === "sm") {
+        document.documentElement.style.fontSize = "14px";
+      } else if (fontSize === "lg") {
+        document.documentElement.style.fontSize = "18px";
+      } else {
+        document.documentElement.style.fontSize = "16px";
+      }
+    }
+  }, [fontSize]);
+
+  const handleLanguageChange = (lang: "km" | "en") => {
+    setLanguage(lang);
+    try {
+      localStorage.setItem("emmi_language", lang);
+    } catch {}
+    showToast(lang === "km" ? "🇰🇭 បានប្តូរទៅជាភាសាខ្មែរ" : "🇬🇧 Switched to English");
+  };
+
+  const handleFontSizeChange = (size: "sm" | "md" | "lg") => {
+    setFontSize(size);
+    try {
+      localStorage.setItem("emmi_font_size", size);
+    } catch {}
+    const label = size === "sm" ? "តូច (Compact)" : size === "lg" ? "ធំ (Large)" : "ស្តង់ដា (Standard)";
+    showToast(`🔤 បានកំណត់ទំហំអក្សរ៖ ${label}`);
+  };
 
   // Fetch live Sheet data
   const fetchData = async () => {
@@ -2709,12 +2744,12 @@ export default function EmmiCRMApp() {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setDrawerOpen(false)}
           />
-          <div className="relative w-[280px] max-w-[80%] h-full bg-[#3e1321] text-white p-5 flex flex-col justify-between shadow-2xl z-10 animate-drawer">
+          <div className="relative w-[285px] max-w-[85%] h-full bg-[#3e1321] text-white p-5 flex flex-col justify-between shadow-2xl z-10 animate-drawer overflow-y-auto">
             <div>
               {/* Drawer Header */}
-              <div className="flex items-center justify-between pb-5 border-b border-white/10">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full overflow-hidden border border-white/30">
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-white/30 shadow-xs">
                     <img src="/emmi-logo.png" alt="EMMI" className="w-full h-full object-cover" />
                   </div>
                   <div>
@@ -2724,39 +2759,131 @@ export default function EmmiCRMApp() {
                 </div>
                 <button
                   onClick={() => setDrawerOpen(false)}
-                  className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white"
+                  className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white cursor-pointer"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Drawer Theme Row */}
-              <div className="my-5 p-3 rounded-2xl bg-white/5 border border-white/10">
-                <p className="text-[11px] text-pink-200/80 mb-2">ការកំណត់</p>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setDarkMode(false)}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                      !darkMode ? "bg-white text-[#7b1e3a] shadow-sm" : "bg-white/10 text-white"
-                    }`}
-                  >
-                    <Sun size={17} />
-                  </button>
-                  <button
-                    onClick={() => setDarkMode(true)}
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${
-                      darkMode ? "bg-white text-[#7b1e3a] shadow-sm" : "bg-white/10 text-white"
-                    }`}
-                  >
-                    <Moon size={17} />
-                  </button>
-                  <button
-                    onClick={() => setFontSize(fontSize === "sm" ? "md" : fontSize === "md" ? "lg" : "sm")}
-                    className="h-9 px-3 rounded-xl bg-white/10 flex items-center gap-1 text-xs font-bold text-white ml-auto"
-                  >
-                    <span className="font-serif">T</span>
-                    <span className="text-[10px]">↕</span>
-                  </button>
+              {/* Standardized Settings Panel: Theme, Language, Font Size */}
+              <div className="my-4 p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-3">
+                <div className="flex items-center justify-between pb-1.5 border-b border-white/10 text-xs">
+                  <span className="font-bold text-pink-200">{language === "en" ? "Settings" : "ការកំណត់ប្រព័ន្ធ"}</span>
+                  <span className="text-[10px] text-pink-300/70">{language === "en" ? "Preferences" : "ស្តង់ដា"}</span>
+                </div>
+
+                {/* 1. Theme Mode (Dark / Light) */}
+                <div className="space-y-1">
+                  <span className="text-[11px] text-pink-200/80 block">
+                    {language === "en" ? "🎨 Theme" : "🎨 ផ្ទៃអេក្រង់"}
+                  </span>
+                  <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-black/20 border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setDarkMode(false)}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                        !darkMode
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      <Sun size={14} />
+                      <span>{language === "en" ? "Light" : "ពន្លឺ"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDarkMode(true)}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                        darkMode
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      <Moon size={14} />
+                      <span>{language === "en" ? "Dark" : "ងងឹត"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Language Switcher (ប្តូរភាសា) */}
+                <div className="space-y-1">
+                  <span className="text-[11px] text-pink-200/80 block">
+                    {language === "en" ? "🌐 Language" : "🌐 ប្តូរភាសា"}
+                  </span>
+                  <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-black/20 border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => handleLanguageChange("km")}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                        language === "km"
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      <span>🇰🇭</span>
+                      <span>ខ្មែរ</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleLanguageChange("en")}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                        language === "en"
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                    >
+                      <span>🇬🇧</span>
+                      <span>English</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 3. Standardized Font Size Selector (ជ្រើសទំហំអក្សរ) */}
+                <div className="space-y-1">
+                  <span className="text-[11px] text-pink-200/80 block">
+                    {language === "en" ? "🔤 Font Size" : "🔤 ទំហំអក្សរ"}
+                  </span>
+                  <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-black/20 border border-white/10 text-center">
+                    <button
+                      type="button"
+                      onClick={() => handleFontSizeChange("sm")}
+                      className={`py-1.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center ${
+                        fontSize === "sm"
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                      title="Compact font"
+                    >
+                      <span className="text-[11px]">A⁻</span>
+                      <span className="text-[9px] opacity-80">{language === "en" ? "Small" : "តូច"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleFontSizeChange("md")}
+                      className={`py-1.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center ${
+                        fontSize === "md"
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                      title="Standard font"
+                    >
+                      <span className="text-xs">A</span>
+                      <span className="text-[9px] opacity-80">{language === "en" ? "Normal" : "ស្តង់ដា"}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleFontSizeChange("lg")}
+                      className={`py-1.5 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center ${
+                        fontSize === "lg"
+                          ? "bg-white text-[#7b1e3a] shadow-sm"
+                          : "text-white/70 hover:text-white"
+                      }`}
+                      title="Large font"
+                    >
+                      <span className="text-sm">A⁺</span>
+                      <span className="text-[9px] opacity-80">{language === "en" ? "Large" : "ធំ"}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -2774,7 +2901,15 @@ export default function EmmiCRMApp() {
                   }`}
                 >
                   <LayoutGrid size={18} />
-                  <span>{currentRole === "admin" ? "ផ្ទាំងបញ្ជា Admin" : "ទំព័រដើម"}</span>
+                  <span>
+                    {language === "en"
+                      ? currentRole === "admin"
+                        ? "Admin Dashboard"
+                        : "Home Dashboard"
+                      : currentRole === "admin"
+                      ? "ផ្ទាំងបញ្ជា Admin"
+                      : "ទំព័រដើម"}
+                  </span>
                 </button>
 
                 <button
@@ -2790,7 +2925,7 @@ export default function EmmiCRMApp() {
                 >
                   <div className="flex items-center gap-3.5">
                     <Users size={18} />
-                    <span>Customers</span>
+                    <span>{language === "en" ? "Customers List" : "បញ្ជីអតិថិជន"}</span>
                   </div>
                   {customerCounts.today > 0 && (
                     <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
@@ -2804,7 +2939,7 @@ export default function EmmiCRMApp() {
                   className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-sm text-white/80 hover:bg-white/10 transition-all"
                 >
                   <ShoppingBag size={18} />
-                  <span>Order</span>
+                  <span>{language === "en" ? "Place Order" : "កុម្ម៉ង់ទំនិញ"}</span>
                   <ExternalLink size={14} className="ml-auto opacity-60" />
                 </a>
 
@@ -2820,7 +2955,7 @@ export default function EmmiCRMApp() {
                   }`}
                 >
                   <FileText size={18} />
-                  <span>Reports</span>
+                  <span>{language === "en" ? "Daily Reports" : "របាយការណ៍ប្រចាំថ្ងៃ"}</span>
                 </button>
 
                 <button
@@ -2835,7 +2970,7 @@ export default function EmmiCRMApp() {
                   }`}
                 >
                   <Trophy size={18} />
-                  <span>Ranking</span>
+                  <span>{language === "en" ? "Sales Ranking" : "ចំណាត់ថ្នាក់អ្នកលក់"}</span>
                 </button>
               </nav>
             </div>
@@ -2844,10 +2979,12 @@ export default function EmmiCRMApp() {
             <div className="pt-4 border-t border-white/10">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-pink-200/90 hover:bg-white/10 transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-pink-200/90 hover:bg-white/10 transition-all cursor-pointer"
               >
                 <LogOut size={18} />
-                <span>ចាកចេញ ({currentRole})</span>
+                <span>
+                  {language === "en" ? "Sign Out" : "ចាកចេញ"} ({currentRole})
+                </span>
               </button>
             </div>
           </div>
@@ -3691,7 +3828,7 @@ export default function EmmiCRMApp() {
                 /* Daily Report Form (matching Screenshot 7) */
                 <form
                   onSubmit={handleSubmitReport}
-                  className="p-5 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-4"
+                  className="p-5 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-4 overflow-hidden"
                 >
                   <div>
                     <span className="inline-block px-3 py-0.5 rounded-full bg-pink-100 dark:bg-[#3e1321] text-[10px] font-bold text-[#7b1e3a] dark:text-pink-300 mb-1">
@@ -3706,8 +3843,8 @@ export default function EmmiCRMApp() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <div>
-                      <label className="block text-xs font-bold mb-1">អ្នករាយការណ៍</label>
+                    <div className="min-w-0">
+                      <label className="block text-xs font-bold mb-1.5">អ្នករាយការណ៍</label>
                       <input
                         type="text"
                         value={currentUser}
@@ -3715,14 +3852,8 @@ export default function EmmiCRMApp() {
                         className="w-full h-11 px-3.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs text-gray-600 dark:text-gray-300 outline-none"
                       />
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold mb-1">កាលបរិច្ឆេទរបាយការណ៍</label>
-                      <input
-                        type="date"
-                        value={reportDate}
-                        onChange={(e) => setReportDate(e.target.value)}
-                        className="w-full h-11 px-3.5 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs outline-none focus:border-[#7b1e3a]"
-                      />
+                    <div className="min-w-0">
+                      {renderDateInputBox(reportDate, setReportDate, "កាលបរិច្ឆេទរបាយការណ៍")}
                     </div>
                   </div>
 
@@ -3871,7 +4002,7 @@ export default function EmmiCRMApp() {
               }`}
             >
               <LayoutGrid size={18} />
-              <span className="text-[10px] mt-0.5">ទំព័រដើម</span>
+              <span className="text-[10px] mt-0.5">{language === "en" ? "Home" : "ទំព័រដើម"}</span>
             </button>
 
             {/* 2. Customers */}
@@ -3889,7 +4020,7 @@ export default function EmmiCRMApp() {
               }`}
             >
               <Users size={18} />
-              <span className="text-[10px] mt-0.5">អតិថិជន</span>
+              <span className="text-[10px] mt-0.5">{language === "en" ? "Clients" : "អតិថិជន"}</span>
               {customerCounts.today > 0 ? (
                 <span className="absolute top-1 right-3 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-white"></span>
               ) : customerCounts.overdue > 0 ? (
@@ -3907,7 +4038,7 @@ export default function EmmiCRMApp() {
                 className="w-[52px] h-[52px] rounded-full bg-[#7b1e3a] hover:bg-[#66162e] active:scale-95 text-white flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-[#2a111a] transition-all"
               >
                 <ShoppingBag size={20} />
-                <span className="text-[9px] font-bold">កុម្ម៉ង់</span>
+                <span className="text-[9px] font-bold">{language === "en" ? "Order" : "កុម្ម៉ង់"}</span>
               </a>
             </div>
 
@@ -3921,7 +4052,7 @@ export default function EmmiCRMApp() {
               }`}
             >
               <FileText size={18} />
-              <span className="text-[10px] mt-0.5">របាយការណ៍</span>
+              <span className="text-[10px] mt-0.5">{language === "en" ? "Reports" : "របាយការណ៍"}</span>
             </button>
 
             {/* 5. Ranking */}
@@ -3934,7 +4065,7 @@ export default function EmmiCRMApp() {
               }`}
             >
               <Trophy size={18} />
-              <span className="text-[10px] mt-0.5">ចំណាត់ថ្នាក់</span>
+              <span className="text-[10px] mt-0.5">{language === "en" ? "Ranking" : "ចំណាត់ថ្នាក់"}</span>
             </button>
           </div>
         </nav>
@@ -3971,29 +4102,12 @@ export default function EmmiCRMApp() {
 
               {/* Grid: Follow-up Date & Next Follow-up Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
-                    📅 បាន Follow Up ថ្ងៃណា:
-                  </label>
-                  <input
-                    type="date"
-                    value={followUpModalDate}
-                    onChange={(e) => setFollowUpModalDate(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-gray-50 dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold outline-none focus:border-[#7b1e3a]"
-                  />
+                <div className="min-w-0">
+                  {renderDateInputBox(followUpModalDate, setFollowUpModalDate, "📅 បាន Follow Up ថ្ងៃណា:")}
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-[#7b1e3a] dark:text-pink-300 mb-1 flex items-center gap-1">
-                    <Calendar size={13} />
-                    <span>🗓️ ត្រូវ Follow ថ្ងៃណាទៀត:</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={followUpNextDate}
-                    onChange={(e) => setFollowUpNextDate(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-[#fbe9ee]/50 dark:bg-white/5 border border-[#7b1e3a]/30 dark:border-white/10 text-xs font-black text-[#7b1e3a] dark:text-pink-300 outline-none focus:border-[#7b1e3a]"
-                  />
+                <div className="min-w-0">
+                  {renderDateInputBox(followUpNextDate, setFollowUpNextDate, "🗓️ ត្រូវ Follow ថ្ងៃណាទៀត:")}
                 </div>
               </div>
 
