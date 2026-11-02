@@ -32,6 +32,9 @@ import {
   Send,
   ArrowUpRight,
   ArrowDownRight,
+  TrendingUp,
+  Package,
+  User,
 } from "lucide-react";
 
 interface Customer {
@@ -119,6 +122,32 @@ const ALL_USERS: UserOption[] = [
 const ORDER_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSd_hP30dqB-F5gCV44AuxcftgmoDjo5zzkN-NSMiK-1rDEqPQ/viewform?usp=header";
 
+const KHMER_MONTHS = [
+  { value: 1, name: "មករា (01)" },
+  { value: 2, name: "កុម្ភៈ (02)" },
+  { value: 3, name: "មីនា (03)" },
+  { value: 4, name: "មេសា (04)" },
+  { value: 5, name: "ឧសភា (05)" },
+  { value: 6, name: "មិថុនា (06)" },
+  { value: 7, name: "កក្កដា (07)" },
+  { value: 8, name: "សីហា (08)" },
+  { value: 9, name: "កញ្ញា (09)" },
+  { value: 10, name: "តុលា (10)" },
+  { value: 11, name: "វិច្ឆិកា (11)" },
+  { value: 12, name: "ធ្នូ (12)" },
+];
+
+const AVAILABLE_YEARS = [2024, 2025, 2026, 2027];
+
+const formatDDMMYYYY = (isoStr: string) => {
+  if (!isoStr) return "";
+  const parts = isoStr.split("-");
+  if (parts.length === 3) {
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  }
+  return isoStr;
+};
+
 export default function EmmiCRMApp() {
   // Authentication & session
   const [authChecked, setAuthChecked] = useState<boolean>(false);
@@ -141,6 +170,24 @@ export default function EmmiCRMApp() {
 
   // Ranking filters: ថ្ងៃនេះ | ម្សិលមិញ | ខែនេះ
   const [rankingPeriod, setRankingPeriod] = useState<"today" | "yesterday" | "monthly">("monthly");
+  // Leadership Business Status & Sales Date Filter (ថ្ងៃ | ខែ (រួមបញ្ចូលឆ្នាំ) | កំណត់)
+  const [salesFilterTab, setSalesFilterTab] = useState<"day" | "month" | "custom">("day");
+  const [salesFilterDay, setSalesFilterDay] = useState<string>(() => {
+    const d = new Date();
+    return d.toISOString().slice(0, 10);
+  });
+  const [salesFilterMonth, setSalesFilterMonth] = useState<number>(() => new Date().getMonth() + 1);
+  const [salesFilterYear, setSalesFilterYear] = useState<number>(() => new Date().getFullYear());
+  const [salesFilterStartDate, setSalesFilterStartDate] = useState<string>(() => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    return `${y}-${m}-01`;
+  });
+  const [salesFilterEndDate, setSalesFilterEndDate] = useState<string>(() => {
+    const d = new Date();
+    return d.toISOString().slice(0, 10);
+  });
   // Ranking Category: Rank ផលិតផល & គោលដៅ vs ចំណាត់ថ្នាក់ទម្លាក់ Report
   const [rankingCategory, setRankingCategory] = useState<"sales" | "reports">("sales");
   const [reportRankType, setReportRankType] = useState<"fastest" | "most">("fastest");
@@ -443,6 +490,89 @@ export default function EmmiCRMApp() {
     };
   }, [sales]);
 
+  // ==========================================
+  // ACTIVE SALES DATE RANGE & FILTERED SALES
+  // ==========================================
+  const activeSalesDateRange = useMemo(() => {
+    let start = "";
+    let end = "";
+    let displayText = "";
+
+    if (salesFilterTab === "day") {
+      start = salesFilterDay;
+      end = salesFilterDay;
+      displayText = formatDDMMYYYY(salesFilterDay);
+    } else if (salesFilterTab === "month") {
+      const y = salesFilterYear;
+      const m = String(salesFilterMonth).padStart(2, "0");
+      const lastDayOfMonth = new Date(y, salesFilterMonth, 0).getDate();
+      start = `${y}-${m}-01`;
+      end = `${y}-${m}-${String(lastDayOfMonth).padStart(2, "0")}`;
+      const today = datesInfo.todayStr;
+      const isCurrentMonth = today.startsWith(`${y}-${m}`);
+      const actualEnd = isCurrentMonth && today < end ? today : end;
+      displayText = `${formatDDMMYYYY(start)} – ${formatDDMMYYYY(actualEnd)}${isCurrentMonth ? " · គិតមកដល់ថ្ងៃនេះ" : ""}`;
+    } else {
+      start = salesFilterStartDate <= salesFilterEndDate ? salesFilterStartDate : salesFilterEndDate;
+      end = salesFilterStartDate <= salesFilterEndDate ? salesFilterEndDate : salesFilterStartDate;
+      displayText = `${formatDDMMYYYY(start)} – ${formatDDMMYYYY(end)}`;
+    }
+
+    return { start, end, displayText };
+  }, [salesFilterTab, salesFilterDay, salesFilterMonth, salesFilterYear, salesFilterStartDate, salesFilterEndDate, datesInfo.todayStr]);
+
+  // Filtered sales based on active sales date range
+  const filteredSales = useMemo(() => {
+    const { start, end } = activeSalesDateRange;
+    return sales.filter((s) => s.date >= start && s.date <= end);
+  }, [sales, activeSalesDateRange]);
+
+  // 4-Stat Sales Summary metrics (លក់សរុប, អ្នកលក់ដែលបានលក់, ផលិតផលបានលក់, ថ្ងៃមានការលក់)
+  const salesSummaryStats = useMemo(() => {
+    let totalBoxes = 0;
+    const totalOrders = filteredSales.length;
+    const activeSellersSet = new Set<string>();
+    const uniqueProductsSet = new Set<string>();
+    const salesDaysSet = new Set<string>();
+
+    filteredSales.forEach((s) => {
+      totalBoxes += s.quantity;
+      if (s.seller) activeSellersSet.add(s.seller.trim().toLowerCase());
+      if (s.product) uniqueProductsSet.add(s.product.trim().toLowerCase());
+      if (s.date) salesDaysSet.add(s.date);
+    });
+
+    return {
+      totalBoxes,
+      totalOrders,
+      activeSellersCount: activeSellersSet.size,
+      uniqueProductsCount: uniqueProductsSet.size,
+      salesDaysCount: salesDaysSet.size,
+    };
+  }, [filteredSales]);
+
+  // Aggregated seller performance for selected period
+  const sellerStatsForPeriod = useMemo(() => {
+    const statsMap = new Map<string, { totalBoxes: number; orderCount: number }>();
+    filteredSales.forEach((s) => {
+      const key = (s.seller || "").trim().toLowerCase();
+      const existing = statsMap.get(key) || { totalBoxes: 0, orderCount: 0 };
+      existing.totalBoxes += s.quantity;
+      existing.orderCount += 1;
+      statsMap.set(key, existing);
+    });
+
+    return ALL_USERS.filter((u) => u.role === "seller").map((seller) => {
+      const key = seller.name.trim().toLowerCase();
+      const data = statsMap.get(key) || { totalBoxes: 0, orderCount: 0 };
+      return {
+        seller,
+        boxes: data.totalBoxes,
+        orders: data.orderCount,
+      };
+    }).sort((a, b) => b.boxes - a.boxes);
+  }, [filteredSales]);
+
   // Open Follow-up Modal with Date & Next Schedule
   const openFollowUpModal = (c: Customer) => {
     setModalCustomer(c);
@@ -528,33 +658,20 @@ export default function EmmiCRMApp() {
   const rankings = useMemo(() => {
     const sellerSalesMap: Record<string, number> = {};
 
-    sales.forEach((s) => {
+    filteredSales.forEach((s) => {
       const seller = s.seller.trim();
       if (!seller) return;
-
-      let match = false;
-      if (rankingPeriod === "today") {
-        match = s.date === datesInfo.todayStr;
-      } else if (rankingPeriod === "yesterday") {
-        match = s.date === datesInfo.yesterdayStr;
-      } else {
-        // monthly ("ខែនេះ")
-        match = s.date.startsWith(datesInfo.curMonthStr);
-      }
-
-      if (match) {
-        sellerSalesMap[seller] = (sellerSalesMap[seller] || 0) + s.quantity;
-      }
+      sellerSalesMap[seller] = (sellerSalesMap[seller] || 0) + s.quantity;
     });
 
-    // If viewing today and 0 sales yet, make sure users with 0 still show or fallback smoothly
+    // If viewing and 0 sales yet, make sure users with 0 still show
     ALL_USERS.filter((u) => u.role === "seller").forEach((u) => {
       if (!(u.name in sellerSalesMap)) {
         sellerSalesMap[u.name] = 0;
       }
     });
 
-    const isDaily = rankingPeriod === "today" || rankingPeriod === "yesterday";
+    const isDaily = salesFilterTab === "day";
 
     const list = Object.entries(sellerSalesMap)
       .map(([name, total]) => {
@@ -568,7 +685,7 @@ export default function EmmiCRMApp() {
       .sort((a, b) => b.total - a.total);
 
     return list;
-  }, [sales, rankingPeriod, datesInfo]);
+  }, [filteredSales, salesFilterTab]);
 
   // Logged-in seller's personal stats for daily & monthly goal
   const myPersonalStats = useMemo(() => {
@@ -1257,6 +1374,285 @@ export default function EmmiCRMApp() {
   }
 
   // ==========================================
+  // LEADERSHIP BUSINESS STATUS & DATE FILTER (ស្ថានភាពអាជីវកម្ម)
+  // Matching user's specifications:
+  // - 3 Tabs: ថ្ងៃ | ខែ | កំណត់ (no separate ឆ្នាំ tab)
+  // - In Month tab: Month & Year dropdowns
+  // - Alert banner if 0 transactions
+  // - 4 Summary stat cards: លក់សរុប, អ្នកលក់ដែលបានលក់, ផលិតផលបានលក់, ថ្ងៃមានការលក់
+  // ==========================================
+  const renderLeadershipBusinessStatus = () => {
+    return (
+      <div className="space-y-3.5">
+        {/* Leadership Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 px-0.5">
+          <div>
+            <p className="text-[11px] font-bold text-[#7b1e3a] dark:text-pink-400 tracking-wider uppercase">
+              EMMI · LEADERSHIP
+            </p>
+            <h2 className="text-xl sm:text-2xl font-black text-[#230c14] dark:text-white">
+              ស្ថានភាពអាជីវកម្ម
+            </h2>
+          </div>
+          <div className="self-start sm:self-auto px-3 py-1 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold text-gray-600 dark:text-gray-300 shadow-xs flex items-center gap-1.5">
+            <Calendar size={13} className="text-[#7b1e3a] dark:text-pink-400" />
+            <span>{activeSalesDateRange.displayText}</span>
+          </div>
+        </div>
+
+        {/* Date Filter Card with 3 Tabs: ថ្ងៃ | ខែ (រួមបញ្ចូលឆ្នាំ) | កំណត់ */}
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-3.5">
+          {/* Top 3 Tab Switcher */}
+          <div className="p-1 rounded-2xl bg-gray-100 dark:bg-white/10 flex gap-1 text-xs font-bold">
+            <button
+              type="button"
+              onClick={() => setSalesFilterTab("day")}
+              className={`flex-1 py-2 px-3 rounded-xl transition-all ${
+                salesFilterTab === "day"
+                  ? "bg-[#7b1e3a] text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              ថ្ងៃ
+            </button>
+            <button
+              type="button"
+              onClick={() => setSalesFilterTab("month")}
+              className={`flex-1 py-2 px-3 rounded-xl transition-all ${
+                salesFilterTab === "month"
+                  ? "bg-[#7b1e3a] text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              ខែ
+            </button>
+            <button
+              type="button"
+              onClick={() => setSalesFilterTab("custom")}
+              className={`flex-1 py-2 px-3 rounded-xl transition-all ${
+                salesFilterTab === "custom"
+                  ? "bg-[#7b1e3a] text-white shadow-sm"
+                  : "text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-white"
+              }`}
+            >
+              កំណត់
+            </button>
+          </div>
+
+          {/* TAB 1: ថ្ងៃ (Day) */}
+          {salesFilterTab === "day" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                  ថ្ងៃ ខែ ឆ្នាំ
+                </label>
+                <input
+                  type="date"
+                  value={salesFilterDay}
+                  onChange={(e) => setSalesFilterDay(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                />
+              </div>
+
+              {/* 2 Quick Presets: ថ្ងៃនេះ | ម្សិលមិញ */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setSalesFilterDay(datesInfo.todayStr)}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                    salesFilterDay === datesInfo.todayStr
+                      ? "bg-[#fbe9ee]/70 dark:bg-[#3e1321] border-[#7b1e3a] text-[#7b1e3a] dark:text-pink-300 shadow-xs"
+                      : "bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  ថ្ងៃនេះ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSalesFilterDay(datesInfo.yesterdayStr)}
+                  className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                    salesFilterDay === datesInfo.yesterdayStr
+                      ? "bg-[#fbe9ee]/70 dark:bg-[#3e1321] border-[#7b1e3a] text-[#7b1e3a] dark:text-pink-300 shadow-xs"
+                      : "bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  ម្សិលមិញ
+                </button>
+              </div>
+
+              <div className="text-[11px] text-gray-400 dark:text-gray-400 pt-1 border-t border-gray-100 dark:border-white/5">
+                {formatDDMMYYYY(salesFilterDay)}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: ខែ (Month + Year Dropdowns inside, exactly as user requested) */}
+          {salesFilterTab === "month" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                    ខែ
+                  </label>
+                  <select
+                    value={salesFilterMonth}
+                    onChange={(e) => setSalesFilterMonth(Number(e.target.value))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2a111a] text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                  >
+                    {KHMER_MONTHS.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                    ឆ្នាំ
+                  </label>
+                  <select
+                    value={salesFilterYear}
+                    onChange={(e) => setSalesFilterYear(Number(e.target.value))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2a111a] text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                  >
+                    {AVAILABLE_YEARS.map((y) => (
+                      <option key={y} value={y}>
+                        ឆ្នាំ {y}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-gray-400 dark:text-gray-400 pt-1 border-t border-gray-100 dark:border-white/5">
+                {activeSalesDateRange.displayText}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: កំណត់ (Custom Date Range) */}
+          {salesFilterTab === "custom" && (
+            <div className="space-y-3 animate-fadeIn">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                    ចាប់ពីថ្ងៃ
+                  </label>
+                  <input
+                    type="date"
+                    value={salesFilterStartDate}
+                    onChange={(e) => setSalesFilterStartDate(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                    ដល់ថ្ងៃ
+                  </label>
+                  <input
+                    type="date"
+                    value={salesFilterEndDate}
+                    onChange={(e) => setSalesFilterEndDate(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                  />
+                </div>
+              </div>
+
+              <div className="text-[11px] text-gray-400 dark:text-gray-400 pt-1 border-t border-gray-100 dark:border-white/5">
+                {activeSalesDateRange.displayText}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Warning Banner if 0 transactions in filtered period */}
+        {filteredSales.length === 0 && (
+          <div className="p-3.5 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-medium flex items-center gap-2 animate-fadeIn">
+            <span className="text-base">⚠️</span>
+            <span>
+              មិនមានប្រតិបត្តិការក្នុងរយៈពេល {activeSalesDateRange.displayText}។ សូមជ្រើសរើសថ្ងៃ ឬខែផ្សេង។
+            </span>
+          </div>
+        )}
+
+        {/* 4 Summary Stat Cards (សង្ខេបការលក់) */}
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-2 px-1">
+            <Package size={17} className="text-emerald-700 dark:text-emerald-400" />
+            <h3 className="text-sm font-bold text-gray-800 dark:text-white">
+              សង្ខេបការលក់
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+            {/* Card 1: លក់សរុប */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
+                <TrendingUp size={15} />
+                <span>លក់សរុប</span>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-[#230c14] dark:text-white">
+                {salesSummaryStats.totalBoxes}{" "}
+                <span className="text-xs font-bold text-gray-500">ប្រអប់</span>
+              </p>
+              <p className="text-[11px] text-gray-400">
+                {salesSummaryStats.totalOrders} ប្រតិបត្តិការលក់
+              </p>
+            </div>
+
+            {/* Card 2: អ្នកលក់ដែលបានលក់ */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-teal-600 dark:text-teal-400">
+                <User size={15} />
+                <span>អ្នកលក់ដែលបានលក់</span>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-[#230c14] dark:text-white">
+                {salesSummaryStats.activeSellersCount}{" "}
+                <span className="text-xs font-bold text-gray-500">នាក់</span>
+              </p>
+              <p className="text-[11px] text-gray-400">
+                ក្នុងរយៈពេលដែលជ្រើស
+              </p>
+            </div>
+
+            {/* Card 3: ផលិតផលបានលក់ */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+                <Package size={15} />
+                <span>ផលិតផលបានលក់</span>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-[#230c14] dark:text-white">
+                {salesSummaryStats.uniqueProductsCount}{" "}
+                <span className="text-xs font-bold text-gray-500">មុខ</span>
+              </p>
+              <p className="text-[11px] text-gray-400">
+                {salesSummaryStats.uniqueProductsCount > 0 ? "មុខទំនិញមានចលនា" : "មិនទាន់មានការលក់"}
+              </p>
+            </div>
+
+            {/* Card 4: ថ្ងៃមានការលក់ */}
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <Calendar size={15} />
+                <span>ថ្ងៃមានការលក់</span>
+              </div>
+              <p className="text-xl sm:text-2xl font-black text-[#230c14] dark:text-white">
+                {salesSummaryStats.salesDaysCount}{" "}
+                <span className="text-xs font-bold text-gray-500">ថ្ងៃ</span>
+              </p>
+              <p className="text-[11px] text-gray-400">
+                នៃរយៈពេលដែលជ្រើស
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ==========================================
   // RENDER: ADMIN EXECUTIVE COMMAND CENTER
   // 1. ការលក់ប្រចាំថ្ងៃ (Today, Yesterday, Month vs 500 Goal & 5/day Goal)
   // 2. អ្នកលក់បាន Follow Up ភ្ញៀវប៉ុន្មាន (Counts, Due, Overdue, Rate)
@@ -1401,6 +1797,9 @@ export default function EmmiCRMApp() {
         {/* ==================================================== */}
         {adminSubTab === "sales" && (
           <div className="space-y-4 animate-fadeIn">
+            {/* Leadership Business Status with 3-tab Date Filter (Day, Month+Year, Custom) & 4-Stat Sales Summary */}
+            {renderLeadershipBusinessStatus()}
+
             {/* Team Goal 500 Boxes Banner */}
             <div className="p-4 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -1950,128 +2349,19 @@ export default function EmmiCRMApp() {
         {/* ==================================================== */}
         {rankingCategory === "sales" && (
           <div className="space-y-4 animate-fadeIn">
-            {/* Header Title (matching Screenshot 1) */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-[#230c14] dark:text-white">
-                  ចំណាត់ថ្នាក់អ្នកលក់
-                </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  វាស់តាមចំនួនប្រអប់ប្រចាំថ្ងៃ ម្សិលមិញ និងប្រចាំខែ។
-                </p>
-              </div>
-              <div className="self-start sm:self-auto px-3 py-1.5 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 text-xs font-bold text-gray-600 dark:text-gray-300 shadow-sm flex items-center gap-1.5">
-                <Calendar size={13} />
-                <span>ទិន្នន័យចុងក្រោយ ({datesInfo.curMonthStr})</span>
-              </div>
-            </div>
-
-            {/* Period Switcher: ថ្ងៃនេះ | ម្សិលមិញ | ខែនេះ */}
-            <div className="p-1.5 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 flex gap-1.5 shadow-sm max-w-md mx-auto sm:max-w-none">
-              <button
-                onClick={() => setRankingPeriod("today")}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  rankingPeriod === "today"
-                    ? "bg-[#7b1e3a] text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-black"
-                }`}
-              >
-                ថ្ងៃនេះ
-              </button>
-              <button
-                onClick={() => setRankingPeriod("yesterday")}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  rankingPeriod === "yesterday"
-                    ? "bg-[#7b1e3a] text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-black"
-                }`}
-              >
-                ម្សិលមិញ
-              </button>
-              <button
-                onClick={() => setRankingPeriod("monthly")}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  rankingPeriod === "monthly"
-                    ? "bg-[#7b1e3a] text-white shadow-sm"
-                    : "text-gray-600 dark:text-gray-300 hover:text-black"
-                }`}
-              >
-                ខែនេះ
-              </button>
-            </div>
-
-            {/* 2 Big Comparison Cards (matching Screenshot 1) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {/* Daily Card */}
-              <div className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                    ផលិតផល{rankingPeriod === "yesterday" ? "ម្សិលមិញ" : "ថ្ងៃនេះ"}:
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md font-bold bg-[#fbe9ee] text-[#7b1e3a] dark:bg-[#3e1321] dark:text-pink-300">
-                    🎯 គោលដៅម្នាក់ 5 ប្រអប់
-                  </span>
-                </div>
-                <div className="my-2">
-                  <span className="text-3xl font-black text-[#230c14] dark:text-white">
-                    {rankingPeriod === "yesterday" ? datesInfo.yesterdayBoxes : datesInfo.todayBoxes}
-                  </span>
-                  <span className="text-xs text-gray-500 ml-1.5">ប្រអប់</span>
-                </div>
-                <p className="text-xs text-gray-500 pt-2 border-t border-[#eadadd]/60 dark:border-white/5 flex items-center justify-between">
-                  <span>ប្រៀបធៀបនឹងម្សិលមិញ:</span>
-                  <span className="font-bold text-[#7b1e3a] dark:text-pink-300">
-                    {datesInfo.yesterdayBoxes} ប្រអប់
-                  </span>
-                </p>
-              </div>
-
-              {/* Monthly Card */}
-              <div className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                    ផលិតផលខែនេះ:
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-md font-bold bg-[#fbe9ee] text-[#7b1e3a] dark:bg-[#3e1321] dark:text-pink-300">
-                    🎯 គោលដៅសរុបទាំងក្រុម 500 ប្រអប់
-                  </span>
-                </div>
-                <div className="my-2 flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-[#230c14] dark:text-white">
-                    {datesInfo.monthBoxes}
-                  </span>
-                  <span className="text-xs text-gray-500">/ 500 ប្រអប់</span>
-                  <span className="text-xs font-bold text-[#7b1e3a] dark:text-pink-400 ml-auto">
-                    {Math.round((datesInfo.monthBoxes / 500) * 100)}% នៃគោលដៅក្រុម
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden mb-2">
-                  <div
-                    className="h-full bg-[#7b1e3a] rounded-full transition-all"
-                    style={{
-                      width: `${Math.min(100, Math.round((datesInfo.monthBoxes / 500) * 100))}%`,
-                    }}
-                  />
-                </div>
-                <p className="text-xs text-gray-500 pt-1.5 border-t border-[#eadadd]/60 dark:border-white/5 flex items-center justify-between">
-                  <span>ប្រៀបធៀបនឹងខែមុន:</span>
-                  <span className="font-bold text-gray-700 dark:text-gray-300">
-                    {datesInfo.lastMonthBoxes} ប្រអប់ ({datesInfo.monthlyDiff}%)
-                  </span>
-                </p>
-              </div>
-            </div>
+            {/* Leadership Business Status with 3-tab Date Filter & 4-Stat Sales Summary */}
+            {renderLeadershipBusinessStatus()}
 
             {/* Section Header */}
             <div className="flex items-center justify-between pt-1">
               <h3 className="text-base font-bold text-[#230c14] dark:text-white">
-                ចំណាត់ថ្នាក់{periodLabel}
+                ចំណាត់ថ្នាក់ · {activeSalesDateRange.displayText}
                 <span className="text-xs font-normal text-gray-500 ml-2">
-                  សរុប {currentTotalBoxes} ប្រអប់
+                  សរុប {salesSummaryStats.totalBoxes} ប្រអប់
                 </span>
               </h3>
               <span className="text-xs px-3 py-1 rounded-full bg-[#fbe9ee] dark:bg-[#3e1321] text-[#7b1e3a] dark:text-pink-300 font-bold">
-                {periodLabel}
+                {salesFilterTab === "day" ? "ប្រចាំថ្ងៃ" : salesFilterTab === "month" ? "ប្រចាំខែ" : "កំណត់កាលបរិច្ឆេទ"}
               </span>
             </div>
 
