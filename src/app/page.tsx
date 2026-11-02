@@ -1373,6 +1373,39 @@ export default function EmmiCRMApp() {
     );
   }
 
+  // Helper to render mobile-optimized date input box that NEVER overflows on iPhone/Android
+  const renderDateInputBox = (
+    value: string,
+    onChange: (val: string) => void,
+    label?: string
+  ) => {
+    return (
+      <div className="w-full min-w-0">
+        {label && (
+          <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+            {label}
+          </label>
+        )}
+        <div className="relative w-full min-w-0">
+          {/* Custom Styled Display Box matching design: DD/MM/YYYY + Calendar icon */}
+          <div className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 flex items-center justify-between shadow-xs pointer-events-none">
+            <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 truncate">
+              {formatDDMMYYYY(value) || "ជ្រើសរើសថ្ងៃ"}
+            </span>
+            <Calendar size={16} className="text-gray-400 dark:text-gray-300 shrink-0 ml-1.5" />
+          </div>
+          {/* Invisible Native Input Overlaid on Top so tapping anywhere opens native picker */}
+          <input
+            type="date"
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          />
+        </div>
+      </div>
+    );
+  };
+
   // ==========================================
   // LEADERSHIP BUSINESS STATUS & DATE FILTER (ស្ថានភាពអាជីវកម្ម)
   // Matching user's specifications:
@@ -1401,7 +1434,7 @@ export default function EmmiCRMApp() {
         </div>
 
         {/* Date Filter Card with 3 Tabs: ថ្ងៃ | ខែ (រួមបញ្ចូលឆ្នាំ) | កំណត់ */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-3.5">
+        <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-3.5 overflow-hidden">
           {/* Top 3 Tab Switcher */}
           <div className="p-1 rounded-2xl bg-gray-100 dark:bg-white/10 flex gap-1 text-xs font-bold">
             <button
@@ -1442,17 +1475,7 @@ export default function EmmiCRMApp() {
           {/* TAB 1: ថ្ងៃ (Day) */}
           {salesFilterTab === "day" && (
             <div className="space-y-3 animate-fadeIn">
-              <div>
-                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                  ថ្ងៃ ខែ ឆ្នាំ
-                </label>
-                <input
-                  type="date"
-                  value={salesFilterDay}
-                  onChange={(e) => setSalesFilterDay(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-                />
-              </div>
+              {renderDateInputBox(salesFilterDay, setSalesFilterDay, "ថ្ងៃ ខែ ឆ្នាំ")}
 
               {/* 2 Quick Presets: ថ្ងៃនេះ | ម្សិលមិញ */}
               <div className="grid grid-cols-2 gap-2.5">
@@ -1490,14 +1513,14 @@ export default function EmmiCRMApp() {
           {salesFilterTab === "month" && (
             <div className="space-y-3 animate-fadeIn">
               <div className="grid grid-cols-2 gap-2.5">
-                <div>
+                <div className="min-w-0">
                   <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
                     ខែ
                   </label>
                   <select
                     value={salesFilterMonth}
                     onChange={(e) => setSalesFilterMonth(Number(e.target.value))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2a111a] text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                    className="w-full h-11 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2a111a] text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
                   >
                     {KHMER_MONTHS.map((m) => (
                       <option key={m.value} value={m.value}>
@@ -1507,14 +1530,14 @@ export default function EmmiCRMApp() {
                   </select>
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
                     ឆ្នាំ
                   </label>
                   <select
                     value={salesFilterYear}
                     onChange={(e) => setSalesFilterYear(Number(e.target.value))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2a111a] text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                    className="w-full h-11 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#2a111a] text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
                   >
                     {AVAILABLE_YEARS.map((y) => (
                       <option key={y} value={y}>
@@ -1535,28 +1558,12 @@ export default function EmmiCRMApp() {
           {salesFilterTab === "custom" && (
             <div className="space-y-3 animate-fadeIn">
               <div className="grid grid-cols-2 gap-2.5">
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                    ចាប់ពីថ្ងៃ
-                  </label>
-                  <input
-                    type="date"
-                    value={salesFilterStartDate}
-                    onChange={(e) => setSalesFilterStartDate(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-                  />
+                <div className="min-w-0">
+                  {renderDateInputBox(salesFilterStartDate, setSalesFilterStartDate, "ចាប់ពីថ្ងៃ")}
                 </div>
 
-                <div>
-                  <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
-                    ដល់ថ្ងៃ
-                  </label>
-                  <input
-                    type="date"
-                    value={salesFilterEndDate}
-                    onChange={(e) => setSalesFilterEndDate(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-                  />
+                <div className="min-w-0">
+                  {renderDateInputBox(salesFilterEndDate, setSalesFilterEndDate, "ដល់ថ្ងៃ")}
                 </div>
               </div>
 
@@ -2848,7 +2855,7 @@ export default function EmmiCRMApp() {
       )}
 
       {/* Main Container: Wide Max-W-5XL on Desktop, Responsive Mobile-first */}
-      <div className="w-full max-w-5xl min-h-screen flex flex-col pb-28 sm:pb-32 mx-auto px-3 sm:px-6 relative">
+      <div className="w-full max-w-5xl min-h-screen flex flex-col pb-36 sm:pb-40 mx-auto px-3 sm:px-6 relative">
         {/* Floating Toast Notification for instant smooth feedback */}
         {toastMessage && (
           <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-2xl bg-[#7b1e3a] text-white text-xs font-bold shadow-2xl flex items-center gap-2 animate-fadeIn border border-white/20">
