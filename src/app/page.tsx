@@ -3439,25 +3439,16 @@ export default function EmmiCRMApp() {
                   )}
                 </button>
 
-                <button
-                  onClick={() => {
-                    setActiveTab("order");
-                    setDrawerOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl font-medium text-sm transition-all ${
-                    activeTab === "order"
-                      ? "bg-white text-[#7b1e3a] font-bold shadow-sm"
-                      : "text-white/80 hover:bg-white/10"
-                  }`}
+                <a
+                  href={ORDER_FORM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-medium text-sm text-white/80 hover:bg-white/10 transition-all cursor-pointer"
                 >
-                  <div className="flex items-center gap-3.5">
-                    <ShoppingBag size={18} />
-                    <span>{language === "en" ? "Order Form (VST)" : "ទម្រង់កុម្មង់ទំនិញ VST"}</span>
-                  </div>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-semibold">
-                    Sheet
-                  </span>
-                </button>
+                  <ShoppingBag size={18} />
+                  <span>{language === "en" ? "Place Order" : "កុម្ម៉ង់ទំនិញ"}</span>
+                  <ExternalLink size={14} className="ml-auto opacity-60" />
+                </a>
 
                 <button
                   onClick={() => {
@@ -3543,9 +3534,7 @@ export default function EmmiCRMApp() {
                     ? "ចំណាត់ថ្នាក់"
                     : activeTab === "customers"
                     ? "បញ្ជីអតិថិជន"
-                    : activeTab === "reports"
-                    ? "របាយការណ៍"
-                    : "ទម្រង់កុម្មង់ទំនិញ VST"}
+                    : "របាយការណ៍"}
                 </p>
               </div>
             </div>
@@ -4551,21 +4540,18 @@ export default function EmmiCRMApp() {
               ) : null}
             </button>
 
-            {/* 3. Center Order Button (Elevated Circle) */}
+            {/* 3. Center Order Button (Elevated Circle) -> Direct Link */}
             <div className="relative -top-3">
-              <button
-                type="button"
-                onClick={() => setActiveTab("order")}
-                title="ទម្រង់កុម្មង់ទំនិញ VST"
-                className={`w-[54px] h-[54px] rounded-full flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-[#2a111a] transition-all active:scale-95 cursor-pointer ${
-                  activeTab === "order"
-                    ? "bg-gradient-to-tr from-[#982245] to-[#c73e65] text-white ring-4 ring-[#7b1e3a]/30 scale-105"
-                    : "bg-[#7b1e3a] hover:bg-[#66162e] text-white"
-                }`}
+              <a
+                href={ORDER_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={language === "en" ? "Place Order" : "កុម្ម៉ង់ទំនិញ"}
+                className="w-[52px] h-[52px] rounded-full bg-[#7b1e3a] hover:bg-[#66162e] active:scale-95 text-white flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-[#2a111a] transition-all cursor-pointer"
               >
                 <ShoppingBag size={20} />
                 <span className="text-[9px] font-bold">{language === "en" ? "Order" : "កុម្ម៉ង់"}</span>
-              </button>
+              </a>
             </div>
 
             {/* 4. Reports */}
