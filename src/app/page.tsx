@@ -1556,22 +1556,23 @@ export default function EmmiCRMApp() {
   const renderDateInputBox = (
     value: string,
     onChange: (val: string) => void,
-    label?: string
+    label?: string,
+    compact?: boolean
   ) => {
     return (
       <div className="w-full min-w-0">
         {label && (
-          <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+          <label className={`block font-bold text-gray-700 dark:text-gray-300 ${compact ? 'text-[11px] mb-1' : 'text-[11px] mb-1.5'}`}>
             {label}
           </label>
         )}
         <div className="relative w-full min-w-0">
           {/* Custom Styled Display Box matching design: DD/MM/YYYY + Calendar icon */}
-          <div className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 flex items-center justify-between shadow-xs pointer-events-none">
-            <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 truncate">
+          <div className={`w-full ${compact ? 'h-10 px-3 rounded-xl text-xs' : 'h-11 px-3.5 rounded-xl text-xs sm:text-sm'} border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 flex items-center justify-between shadow-xs pointer-events-none`}>
+            <span className="font-bold text-gray-800 dark:text-gray-100 truncate">
               {formatDDMMYYYY(value) || "ជ្រើសរើសថ្ងៃ"}
             </span>
-            <Calendar size={16} className="text-gray-400 dark:text-gray-300 shrink-0 ml-1.5" />
+            <Calendar size={compact ? 14 : 16} className="text-gray-400 dark:text-gray-300 shrink-0 ml-1.5" />
           </div>
           {/* Invisible Native Input Overlaid on Top so tapping anywhere opens native picker */}
           <input
@@ -2878,60 +2879,46 @@ export default function EmmiCRMApp() {
   // ==========================================
   const renderOrderTab = () => {
     return (
-      <div className="space-y-4 animate-fadeIn pb-10">
-        {/* Header Card */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[#7b1e3a] via-[#8c2242] to-[#5a1428] text-white shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-44 h-44 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
-          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-pink-100 text-[10px] font-bold uppercase tracking-wider mb-2">
-                <ShoppingBag size={12} />
-                <span>EMMI • ORDER SYSTEM</span>
+      <div className="space-y-3 animate-fadeIn pb-10">
+        {/* Compact Header Banner */}
+        <div className="px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-[#7b1e3a] via-[#8c2242] to-[#6b1830] text-white shadow-sm flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+              <ShoppingBag size={16} className="text-pink-100" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h2 className="text-sm font-black text-white leading-tight">ទម្រង់កុម្មង់ទំនិញ VST</h2>
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-amber-400/25 text-amber-200 border border-amber-300/30">
+                  ⭐ {orderTeam}
+                </span>
               </div>
-              <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
-                <span>ទម្រង់កុម្មង់ទំនិញ VST</span>
-              </h2>
-              <p className="text-xs text-pink-100/80 mt-1 max-w-md">
-                បំពេញទិន្នន័យកុម្ម៉ង់ខាងក្រោម វានឹងលោតចូល Google Sheet ការកុម្ម៉ង់ស្តង់ដាដោយស្វ័យប្រវត្តិ។
+              <p className="text-[10px] text-pink-200/90 leading-tight truncate mt-0.5">
+                កត់ត្រាចូល Google Sheet ស្តង់ដាស្វ័យប្រវត្តិ
               </p>
             </div>
-
-            <div className="flex items-center gap-2 self-start sm:self-center">
-              <a
-                href={ORDER_FORM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs border border-white/10 transition-all cursor-pointer"
-                title="បើកមើល Google Form ដើម"
-              >
-                <span>Google Form</span>
-                <ExternalLink size={12} />
-              </a>
-            </div>
           </div>
 
-          {/* Quick Team Badge */}
-          <div className="mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
-            <span className="text-pink-200/90 font-medium">ថ្នាក់ដឹកនាំកំណត់ទុក៖</span>
-            <span className="px-2.5 py-1 rounded-lg bg-amber-400/20 text-amber-200 font-bold border border-amber-300/30">
-              ⭐ {orderTeam}
-            </span>
-            <span className="text-pink-200/90 ml-2 font-medium">អ្នកលក់៖</span>
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-200 font-bold border border-emerald-400/30 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              {currentUser}
-            </span>
-          </div>
+          <a
+            href={ORDER_FORM_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 text-white text-[11px] font-semibold border border-white/15 transition-all shrink-0 cursor-pointer"
+            title="បើកមើល Google Form ដើម"
+          >
+            <span>Form ដើម</span>
+            <ExternalLink size={11} />
+          </a>
         </div>
 
         {/* Success Alert */}
         {orderSuccess && (
-          <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 shadow-sm flex items-start gap-3 animate-fadeIn">
-            <CheckCircle2 size={20} className="text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 shadow-xs flex items-center gap-2.5 animate-fadeIn">
+            <CheckCircle2 size={18} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
             <div className="flex-1 text-xs">
-              <p className="font-bold text-sm">✅ បានបញ្ជូនការកុម្ម៉ង់ដោយជោគជ័យ!</p>
-              <p className="mt-0.5 text-emerald-700 dark:text-emerald-300">
-                ទិន្នន័យបានកត់ត្រាចូលទៅក្នុង Google Sheet ការកុម្ម៉ង់ស្តង់ដារួចរាល់។ អ្នកអាចបន្តកុម្ម៉ង់បន្ថែមទៀតបាន។
+              <p className="font-bold text-xs">✅ បានបញ្ជូនការកុម្ម៉ង់ដោយជោគជ័យ!</p>
+              <p className="text-[11px] text-emerald-700 dark:text-emerald-300">
+                ទិន្នន័យបានកត់ត្រាចូល Google Sheet រួចរាល់។
               </p>
             </div>
           </div>
@@ -2939,89 +2926,103 @@ export default function EmmiCRMApp() {
 
         {/* Error Alert */}
         {orderError && (
-          <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 shadow-sm flex items-start gap-3 animate-fadeIn">
-            <AlertCircle size={20} className="text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-900 dark:text-red-200 shadow-xs flex items-center gap-2.5 animate-fadeIn">
+            <AlertCircle size={18} className="text-red-600 dark:text-red-400 shrink-0" />
             <div className="flex-1 text-xs">
-              <p className="font-bold text-sm">❌ មិនអាចបញ្ជូនបាន</p>
-              <p className="mt-0.5 text-red-700 dark:text-red-300">{orderError}</p>
+              <p className="font-bold text-xs">❌ មិនអាចបញ្ជូនបាន</p>
+              <p className="text-[11px] text-red-700 dark:text-red-300">{orderError}</p>
             </div>
           </div>
         )}
 
-        {/* Main Form - Arranged exactly matching the Standard Google Form */}
-        <form
-          onSubmit={handleSubmitOrder}
-          className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-sm space-y-5"
-        >
-          {/* Question 1: Date */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ១. កាលបរិច្ឆេទ(Date) <span className="text-red-500">*</span>
-            </label>
-            {renderDateInputBox(orderDate, setOrderDate)}
-          </div>
+        {/* Compact Form */}
+        <form onSubmit={handleSubmitOrder} className="space-y-3">
+          {/* Card 1: ព័ត៌មានអ្នកលក់ & កាលបរិច្ឆេទ */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-xs space-y-3">
+            <div className="flex items-center gap-1.5 pb-2 border-b border-gray-100 dark:border-white/5">
+              <User size={14} className="text-[#7b1e3a] dark:text-pink-400" />
+              <h3 className="text-xs font-black text-gray-800 dark:text-gray-100">
+                ព័ត៌មានអ្នកលក់ និងកាលបរិច្ឆេទ
+              </h3>
+            </div>
 
-          {/* Question 2: Team */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ២. ថ្នាក់ដឹកនាំ(Team) <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <select
-                value={orderTeam}
-                onChange={(e) => setOrderTeam(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-              >
-                {TEAM_OPTIONS.map((t) => (
-                  <option key={t} value={t} className="text-gray-900 dark:text-white">
-                    {t === "Vann_Sitha" ? `⭐ ${t} (Default)` : t}
-                  </option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Question 1: Date */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  ១. កាលបរិច្ឆេទ(Date) <span className="text-red-500">*</span>
+                </label>
+                {renderDateInputBox(orderDate, setOrderDate, undefined, true)}
+              </div>
+
+              {/* Question 2: Team */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  ២. ថ្នាក់ដឹកនាំ(Team) <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={orderTeam}
+                  onChange={(e) => setOrderTeam(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                >
+                  {TEAM_OPTIONS.map((t) => (
+                    <option key={t} value={t} className="text-gray-900 dark:text-white">
+                      {t === "Vann_Sitha" ? `⭐ ${t} (Default)` : t}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Question 3: Seller Name */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  ៣. ឈ្មោះអ្នកលក់ <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={orderSellerName}
+                  onChange={(e) => setOrderSellerName(e.target.value)}
+                  placeholder="វាយឈ្មោះអ្នកលក់..."
+                  className="w-full h-10 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                />
+              </div>
+
+              {/* Question 4: Seller No */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  ៤. លេខអ្នកលក់(Seller No)
+                </label>
+                <input
+                  type="text"
+                  value={orderSellerNo}
+                  onChange={(e) => setOrderSellerNo(e.target.value)}
+                  placeholder="លេខទូរស័ព្ទ ឬកូដអ្នកលក់"
+                  className="w-full h-10 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Question 3: Seller Name */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ៣. ឈ្មោះអ្នកលក់ <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={orderSellerName}
-              onChange={(e) => setOrderSellerName(e.target.value)}
-              placeholder="វាយឈ្មោះអ្នកលក់..."
-              className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-            />
-          </div>
-
-          {/* Question 4: Seller No */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ៤. លេខអ្នកលក់(Seller No)
-            </label>
-            <input
-              type="text"
-              value={orderSellerNo}
-              onChange={(e) => setOrderSellerNo(e.target.value)}
-              placeholder="លេខទូរស័ព្ទ ឬកូដអ្នកលក់"
-              className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-            />
-          </div>
-
-          {/* Question 5: Product & Quantity */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-3.5">
-            {/* 5.1 Select Product */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                  ៥. រើសមុខផលិតផល (Product) <span className="text-red-500">*</span>
-                </label>
-                <span className="text-xs font-black text-[#7b1e3a] dark:text-pink-400">
-                  {orderProductName}
-                </span>
+          {/* Card 2: ព័ត៌មានទំនិញ & តម្លៃ */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-white/5">
+              <div className="flex items-center gap-1.5">
+                <ShoppingBag size={14} className="text-[#7b1e3a] dark:text-pink-400" />
+                <h3 className="text-xs font-black text-gray-800 dark:text-gray-100">
+                  មុខទំនិញ និងតម្លៃ
+                </h3>
               </div>
+              <span className="text-[11px] font-black text-[#7b1e3a] dark:text-pink-400">
+                {orderProductName} × {orderProductQty} ប្រអប់
+              </span>
+            </div>
+
+            {/* Question 5: Product Selection */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                ៥. រើសមុខផលិតផល (Product) <span className="text-red-500">*</span>
+              </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {PRODUCT_OPTIONS.map((prod) => {
                   const isSelected = orderProductName === prod.id;
@@ -3030,19 +3031,19 @@ export default function EmmiCRMApp() {
                       key={prod.id}
                       type="button"
                       onClick={() => setOrderProductName(prod.id)}
-                      className={`p-3 rounded-2xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                      className={`p-2 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? "border-[#7b1e3a] bg-[#7b1e3a]/10 dark:bg-[#7b1e3a]/30 shadow-xs ring-2 ring-[#7b1e3a]"
+                          ? "border-[#7b1e3a] bg-[#7b1e3a]/10 dark:bg-[#7b1e3a]/30 shadow-xs ring-1.5 ring-[#7b1e3a]"
                           : "border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] hover:border-gray-300"
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs sm:text-sm font-black text-gray-900 dark:text-white">
+                        <span className="text-xs font-black text-gray-900 dark:text-white">
                           {prod.name}
                         </span>
-                        {isSelected && <Check size={14} className="text-[#7b1e3a] dark:text-pink-400 font-bold" />}
+                        {isSelected && <Check size={13} className="text-[#7b1e3a] dark:text-pink-400 font-bold" />}
                       </div>
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1">
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 truncate">
                         {prod.desc}
                       </span>
                     </button>
@@ -3051,26 +3052,21 @@ export default function EmmiCRMApp() {
               </div>
             </div>
 
-            {/* 5.2 Quantity */}
-            <div className="pt-2.5 border-t border-gray-200/60 dark:border-white/10">
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                  ចំនួនប្រអប់ (Quantity) <span className="text-red-500">*</span>
-                </label>
-                <span className="text-xs font-black text-[#7b1e3a] dark:text-pink-400">
-                  {orderProductName} × {orderProductQty} ប្រអប់
-                </span>
-              </div>
+            {/* Quantity */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                ចំនួនប្រអប់ (Quantity) <span className="text-red-500">*</span>
+              </label>
               <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
                 {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"].map((qty) => (
                   <button
                     key={qty}
                     type="button"
                     onClick={() => setOrderProductQty(qty)}
-                    className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    className={`h-8 rounded-lg text-xs font-black transition-all cursor-pointer flex items-center justify-center ${
                       orderProductQty === qty
-                        ? "bg-[#7b1e3a] text-white shadow-sm ring-2 ring-[#7b1e3a]/30 scale-102"
-                        : "bg-white dark:bg-[#341420] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-100"
+                        ? "bg-[#7b1e3a] text-white shadow-xs ring-2 ring-[#7b1e3a]/30 scale-102"
+                        : "bg-gray-50 dark:bg-[#341420] text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:bg-gray-100"
                     }`}
                   >
                     {qty}
@@ -3078,144 +3074,157 @@ export default function EmmiCRMApp() {
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Question 6: Price */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ៦. តម្លៃ(Price) <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              required
-              value={orderPrice}
-              onChange={(e) => setOrderPrice(e.target.value)}
-              placeholder="វាយតម្លៃលក់ (ឧ. 25$)"
-              className="w-full h-11 px-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-            />
-          </div>
-
-          {/* Question 7: Receiver No */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ៧. លេខអ្នកទទួល(Receiver No) <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                <Phone size={15} />
-              </div>
-              <input
-                type="tel"
-                required
-                value={orderReceiverPhone}
-                onChange={(e) => setOrderReceiverPhone(e.target.value)}
-                placeholder="លេខទូរស័ព្ទអ្នកទទួល (ឧ. 0976818615)"
-                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-              />
-            </div>
-          </div>
-
-          {/* Question 8: Recipient */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ៨. ឈ្មោះអ្នកទទួល(Recipient)
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                <User size={15} />
-              </div>
+            {/* Question 6: Price */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                ៦. តម្លៃ(Price) <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
-                value={orderReceiverName}
-                onChange={(e) => setOrderReceiverName(e.target.value)}
-                placeholder="ឈ្មោះអ្នកទទួល (ប្រសិនបើមាន)"
-                className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-              />
-            </div>
-          </div>
-
-          {/* Question 9: Address */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ៩. អាសយដ្ឋាន(Address) <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <div className="absolute top-3 left-3 flex items-start pointer-events-none text-gray-400">
-                <MapPin size={16} />
-              </div>
-              <textarea
                 required
-                rows={2}
-                value={orderAddress}
-                onChange={(e) => setOrderAddress(e.target.value)}
-                placeholder="ផ្ទះលេខ... ផ្លូវ... ឃុំ/សង្កាត់... ស្រុក/ខណ្ឌ... ខេត្ត/រាជធានី..."
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                value={orderPrice}
+                onChange={(e) => setOrderPrice(e.target.value)}
+                placeholder="វាយតម្លៃលក់ (ឧ. 25$)"
+                className="w-full h-10 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
               />
             </div>
           </div>
 
-          {/* Question 10: Delivery */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-2">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ១០. ដឹកជញ្ជូនតាម(Delivery) <span className="text-red-500">*</span>
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {DELIVERY_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => setOrderDelivery(opt.id)}
-                  className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
-                    orderDelivery === opt.id
-                      ? "border-[#7b1e3a] bg-[#7b1e3a]/10 dark:bg-[#7b1e3a]/30 shadow-xs ring-1 ring-[#7b1e3a]"
-                      : "border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-gray-300"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-gray-800 dark:text-gray-100">
-                      {opt.id}
-                    </span>
-                    {orderDelivery === opt.id && (
-                      <Check size={14} className="text-[#7b1e3a] dark:text-pink-400 font-bold" />
-                    )}
-                  </div>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 truncate">
-                    {opt.sub}
-                  </span>
-                </button>
-              ))}
+          {/* Card 3: ព័ត៌មានអ្នកទទួល & ដឹកជញ្ជូន */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#2a111a] border border-[#eadadd] dark:border-white/10 shadow-xs space-y-3">
+            <div className="flex items-center gap-1.5 pb-2 border-b border-gray-100 dark:border-white/5">
+              <MapPin size={14} className="text-[#7b1e3a] dark:text-pink-400" />
+              <h3 className="text-xs font-black text-gray-800 dark:text-gray-100">
+                ព័ត៌មានអ្នកទទួល និងការដឹកជញ្ជូន
+              </h3>
             </div>
-          </div>
 
-          {/* Question 11: Note */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/70 dark:bg-white/5 border border-gray-100 dark:border-white/5 space-y-1.5">
-            <label className="block text-xs font-bold text-gray-800 dark:text-gray-200">
-              ១១. ចំណាំ(Note)
-            </label>
-            <textarea
-              rows={2}
-              value={orderNote}
-              onChange={(e) => setOrderNote(e.target.value)}
-              placeholder="ចំណាំបន្ថែមសម្រាប់ទំនិញ ឬការដឹកជញ្ជូន..."
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
-            />
+            {/* Row 1: Receiver Phone & Name */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {/* Question 7: Receiver Phone */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  ៧. លេខអ្នកទទួល(Receiver No) <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Phone size={14} />
+                  </div>
+                  <input
+                    type="tel"
+                    required
+                    value={orderReceiverPhone}
+                    onChange={(e) => setOrderReceiverPhone(e.target.value)}
+                    placeholder="លេខទូរស័ព្ទ (ឧ. 0976818615)"
+                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs font-bold text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                  />
+                </div>
+              </div>
+
+              {/* Question 8: Recipient Name */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                  ៨. ឈ្មោះអ្នកទទួល(Recipient)
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <User size={14} />
+                  </div>
+                  <input
+                    type="text"
+                    value={orderReceiverName}
+                    onChange={(e) => setOrderReceiverName(e.target.value)}
+                    placeholder="ឈ្មោះអ្នកទទួល (ប្រសិនបើមាន)"
+                    className="w-full h-10 pl-9 pr-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Question 9: Address */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                ៩. អាសយដ្ឋាន(Address) <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="absolute top-2.5 left-3 flex items-start pointer-events-none text-gray-400">
+                  <MapPin size={14} />
+                </div>
+                <textarea
+                  required
+                  rows={2}
+                  value={orderAddress}
+                  onChange={(e) => setOrderAddress(e.target.value)}
+                  placeholder="ផ្ទះលេខ... ផ្លូវ... ឃុំ/សង្កាត់... ស្រុក/ខណ្ឌ... ខេត្ត/រាជធានី..."
+                  className="w-full pl-9 pr-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+                />
+              </div>
+            </div>
+
+            {/* Question 10: Delivery */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1.5">
+                ១០. ដឹកជញ្ជូនតាម(Delivery) <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                {DELIVERY_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setOrderDelivery(opt.id)}
+                    className={`p-2 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                      orderDelivery === opt.id
+                        ? "border-[#7b1e3a] bg-[#7b1e3a]/10 dark:bg-[#7b1e3a]/30 ring-1.5 ring-[#7b1e3a]"
+                        : "border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-black text-gray-800 dark:text-gray-100 truncate">
+                        {opt.id}
+                      </span>
+                      {orderDelivery === opt.id && (
+                        <Check size={13} className="text-[#7b1e3a] dark:text-pink-400 font-bold shrink-0 ml-1" />
+                      )}
+                    </div>
+                    <span className="text-[10px] text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                      {opt.sub}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Question 11: Note */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-700 dark:text-gray-300 mb-1">
+                ១១. ចំណាំ(Note)
+              </label>
+              <input
+                type="text"
+                value={orderNote}
+                onChange={(e) => setOrderNote(e.target.value)}
+                placeholder="ចំណាំបន្ថែមសម្រាប់ទំនិញ ឬការដឹកជញ្ជូន..."
+                className="w-full h-10 px-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a]"
+              />
+            </div>
           </div>
 
           {/* Submit Button */}
-          <div className="pt-2">
+          <div className="pt-1">
             <button
               type="submit"
               disabled={submittingOrder}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#7b1e3a] to-[#9c254d] hover:from-[#66162e] hover:to-[#851c3f] active:scale-98 text-white font-bold text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-[#7b1e3a] to-[#9c254d] hover:from-[#66162e] hover:to-[#851c3f] active:scale-98 text-white font-bold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {submittingOrder ? (
                 <>
-                  <RefreshCw size={16} className="animate-spin" />
+                  <RefreshCw size={15} className="animate-spin" />
                   <span>កំពុងបញ្ជូន...</span>
                 </>
               ) : (
                 <>
-                  <ShoppingBag size={17} />
+                  <ShoppingBag size={16} />
                   <span>បញ្ជូនការកុម្ម៉ង់ (Submit)</span>
                 </>
               )}
