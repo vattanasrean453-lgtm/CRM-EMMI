@@ -212,9 +212,7 @@ function parseOrRecoverStructured(rawText: string): {
 
 export async function POST(req: Request) {
   try {
-    const apiKey =
-      process.env.GEMINI_API_KEY ||
-      ["AQ.Ab8RN6J8DPIrVAL", "-A8i_twkNyJ4BO54KD_86", "-StOOIrVz7MPPA"].join("");
+    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
         { ok: false, message: "មិនទាន់បានកំណត់ GEMINI_API_KEY នៅក្នុង .env.local ទេ" },

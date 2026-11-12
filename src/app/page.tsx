@@ -175,116 +175,116 @@ const DELIVERY_OPTIONS = [
 const AI_CONSULTATION_CATEGORIES = [
   {
     id: "tough_medical",
-    label: "🩺 រោគស្ត្រីស្មុគស្មាញ (មេរៀន ៦-១២)",
-    desc: "ដុំសាច់/គីស, ស្បូនលូន/លាន់, សិរមាន់, បំបៅដោះ",
+    label: "🩺 ជំងឺស្មុគស្មាញ",
+    desc: "ដុំគីស, ស្បូនលូន, សិរមាន់",
     scenarios: [
       {
-        title: "🏥 មានដុំសាច់ស្បូន / គីសអូវែ (មេរៀន ៦)",
+        title: "🏥 ដុំសាច់ / គីសអូវែ",
         prompt: "ភ្ញៀវប្រាប់ថាគាត់មានដុំសាច់ក្នុងស្បូន ឬដុំគីសអូវែ ហើយមានធ្លាក់ស និងរដូវមិនទៀង គាត់ខ្លាចញ៉ាំ Emmi ទៅប៉ះពាល់ដុំគីស តើត្រូវពន្យល់គាត់តាមមេរៀនទី ៦ យ៉ាងម៉េច?",
       },
       {
-        title: "💨 ស្បូនលូន / ស្បូនលាន់ខ្យល់ (មេរៀន ៩)",
+        title: "💨 ស្បូនលូន / លាន់ខ្យល់",
         prompt: "ភ្ញៀវក្រោយសម្រាលកូន មានបញ្ហាស្បូនលូនធ្លាក់ទាប ធ្ងន់ថ្ងាស និងមានខ្យល់ចេញពីទ្វារមាស (ស្បូនលាន់) ពេលរួមដំណេក គាត់ខ្មាសស្វាមីខ្លាំង តើត្រូវណែនាំ Emmi រួមជាមួយលំហាត់ប្រាណ Kegel យ៉ាងម៉េច?",
       },
       {
-        title: "🩸 សាច់ដុះច្រមុះស្បូន / ធ្លាក់ឈាមក្រោយរួមភេទ (មេរៀន ៧)",
+        title: "🩸 សាច់ដុះច្រមុះស្បូន",
         prompt: "ភ្ញៀវប្រាប់ថាគាត់ឧស្សាហ៍ធ្លាក់ឈាមតិចៗក្រោយពេលរួមដំណេក ឬធ្លាប់ពិនិត្យឃើញសាច់ដុះច្រមុះស្បូន (Cervical Polyps) តើត្រូវប្រឹក្សា និងណែនាំគាត់យ៉ាងម៉េច?",
       },
       {
-        title: "🔥 រលាកអាងត្រគាក PID / ឈឺពោះក្រោម (មេរៀន ១០)",
+        title: "🔥 រលាកអាងត្រគាក PID",
         prompt: "ភ្ញៀវមានអាការៈឈឺចាប់អាងត្រគាក និងពោះផ្នែកខាងក្រោមរ៉ាំរ៉ៃ ធ្លាក់សធុំក្លិន និងឈឺពេលរួមដំណេក (សង្ស័យរលាកអាងត្រគាក PID) តើត្រូវណែនាំគាត់បែបណា?",
       },
       {
-        title: "⚠️ ដុះសាច់សិរមាន់ HPV (មេរៀន ១២)",
+        title: "⚠️ ដុះសាច់សិរមាន់ HPV",
         prompt: "ភ្ញៀវឆាតមកប្រាប់ថាគាត់មានដុះសាច់តូចៗដូចផ្កាស្ពៃ ឬសិរមាន់នៅតំបន់ពិសេស (ជំងឺសិរមាន់ HPV) តើអ្នកលក់ត្រូវឆ្លើយលើកទឹកចិត្ត រក្សាការសម្ងាត់ និងណែនាំគាត់ទៅជួបគ្រូពេទ្យយ៉ាងម៉េចតាមមេរៀនទី ១២?",
       },
       {
-        title: "🤱 កំពុងបំបៅដោះកូន / ទឹកនោមផ្អែម",
+        title: "🤱 បំបៅដោះ / ទឹកនោមផ្អែម",
         prompt: "ភ្ញៀវកំពុងបំបៅដោះកូន (ឬមានជំងឺប្រចាំកាយដូចជាទឹកនោមផ្អែម/លើសឈាម) មានបញ្ហាធ្លាក់ស និងស្បូនខ្សោយ គាត់សួរថាញ៉ាំ Emmi បានអត់?",
       },
     ],
   },
   {
     id: "core_symptoms",
-    label: "🌸 វិនិច្ឆ័យធ្លាក់ស & អ័រម៉ូន (មេរៀន ១-៥, ៨, ១៣-១៥)",
-    desc: "ផ្សិត vs បាក់តេរី, រដូវ, ស្បែកជាំ, វ័យអស់រដូវ",
+    label: "🌸 ធ្លាក់ស & អ័រម៉ូន",
+    desc: "ផ្សិត, បាក់តេរី, រដូវ, ជាំ",
     scenarios: [
       {
-        title: "🔍 សំណួរវិនិច្ឆ័យរោគទាំង ៥ (មេរៀន ៤)",
+        title: "🔍 សំណួរវិនិច្ឆ័យទាំង ៥",
         prompt: "ភ្ញៀវឆាតមកសួរកំបុតៗថា 'អូន ធ្លាក់សញ៉ាំអីជា?' តើត្រូវប្រើប្រយោគបើកឆាក និងសំណួរវិនិច្ឆ័យរោគស្ត្រីទាំង ៥ ក្នុងមេរៀនទី ៤ ដើម្បីសួរគាត់បែបណាឱ្យគាត់មើលឃើញថាយើងជាអ្នកជំនាញ?",
       },
       {
-        title: "🧀 ធ្លាក់សកកដូចម្សៅ/ទឹកដោះគោជូរ & រមាស់ខ្លាំង (មេរៀន ៥)",
+        title: "🧀 ធ្លាក់សផ្សិត (ដូចម្សៅ)",
         prompt: "ភ្ញៀវប្រាប់ថាគាត់ធ្លាក់សពណ៌សខាប់កកដូចម្សៅ ឬទឹកដោះគោជូរ រមាស់ខ្លាំង និងផ្សារក្រហម (មេរោគផ្សិត Candida) ក្រោយគាត់ឧស្សាហ៍លេបថ្នាំផ្សះ និងចូលចិត្តញ៉ាំផ្អែម តើត្រូវពន្យល់គាត់តាមមេរៀនទី ៥ យ៉ាងម៉េច?",
       },
       {
-        title: "🐟 ធ្លាក់សប្រផេះក្លិនឆ្អាប vs បៃតងមានពពុះ (មេរៀន ១&៣)",
+        title: "🐟 ធ្លាក់សប្រផេះឆ្អាប/បៃតង",
         prompt: "ភ្ញៀវប្រាប់ថាគាត់ធ្លាក់សមានក្លិនឆ្អាបខ្លាំងជាពិសេសក្រោយរួមដំណេក (ឬពណ៌លឿងបៃតង) គាត់អៀនស្វាមីខ្លាំង តើត្រូវពន្យល់ពីបាក់តេរីអាក្រក់ និងផលប៉ះពាល់ទាំង ៥ យ៉ាងដើម្បីបិទការលក់ Emmi យ៉ាងម៉េច?",
       },
       {
-        title: "🩸 រដូវមិនទៀង / ឈាមខ្មៅកកដុំៗ (មេរៀន ៨&១៤)",
+        title: "🩸 រដូវមិនទៀង / ឈាមខ្មៅ",
         prompt: "ភ្ញៀវមករដូវមិនទៀង មកតិចៗពណ៌ខ្មៅកកដុំៗ និងឈឺចុកពោះខ្លាំង តើត្រូវប្រើយុទ្ធសាស្ត្រ 'សង្កេត - ណែនាំ - បង្ហាញដំណោះស្រាយ' តាមមេរៀនទី ៨ និង ១៤ យ៉ាងដូចម្តេច?",
       },
       {
-        title: "✨ មុខជាំ មុនអ័រម៉ូន៖ ស្បូនជាឫសគល់ ស្បែកជាស្លឹក (មេរៀន ១៣)",
+        title: "✨ មុខជាំ & មុនអ័រម៉ូន",
         prompt: "ភ្ញៀវលាបឡេថ្លៃៗតែមុខនៅតែជាំ និងឡើងមុនអ័រម៉ូនមិនបាត់ តើត្រូវប្រើទស្សនៈ 'ស្បូនគឺជាឫសគល់ ចំណែកស្បែកគឺជាស្លឹក' ក្នុងមេរៀនទី ១៣ ដើម្បីពន្យល់គាត់ឱ្យទិញ Emmi យ៉ាងម៉េច?",
       },
       {
-        title: "⏳ វ័យអស់រដូវ ៤៥-៥៥ឆ្នាំ & ដើមទ្រូងយារធ្លាក់ (មេរៀន ១១&១៥)",
+        title: "⏳ វ័យអស់រដូវ & ដើមទ្រូង",
         prompt: "ភ្ញៀវវ័យ ៤៥-៥៥ ឆ្នាំ មានបញ្ហាស្ងួតទ្វារមាស ក្តៅភាយៗ បែកញើសយប់ មួម៉ៅ និងដើមទ្រូងយារធ្លាក់ តើត្រូវណែនាំ 'មន្តស្នេហ៍ ៣៦០ ដឺក្រេ' របស់ Emmi តាមមេរៀនទី ១១ និង ១៥ យ៉ាងម៉េច?",
       },
     ],
   },
   {
     id: "objections",
-    label: "🛡️ ភ្ញៀវរុញរា / ពិបាកបិទ",
-    desc: "ភ្ញៀវមិនទុកចិត្ត ថាថ្លៃ ឬចាំគិតមើលសិន",
+    label: "🛡️ ភ្ញៀវរុញរា/តម្លៃ",
+    desc: "ថាថ្លៃ, មិនទុកចិត្ត, គិតសិន",
     scenarios: [
       {
-        title: "😒 ប្រើថ្នាំសុល/ថ្នាំពេទ្យច្រើនហើយ តែលាប់មកវិញ",
+        title: "😒 ប្រើថ្នាំសុលច្រើនអត់ជា",
         prompt: "ភ្ញៀវនិយាយថា៖ 'បងធ្លាប់ទិញថ្នាំសុល និងលេបថ្នាំផ្សះច្រើនដងហើយ ជាបានតែមួយភ្លែតក៏លាប់មកវិញ អស់លុយច្រើនណាស់ ខ្លាចទិញ Emmi ទៅដូចគ្នា' តើត្រូវពន្យល់ពីភាពខុសគ្នារវាងថ្នាំផ្សះ និងការបង្កើនបាក់តេរីល្អរបស់ Emmi យ៉ាងម៉េច?",
       },
       {
-        title: "💰 ភ្ញៀវថា 'តម្លៃថ្លៃពេក' (មេរៀន ២៖ ផលប៉ះពាល់សេដ្ឋកិច្ច)",
+        title: "💰 ភ្ញៀវថា 'តម្លៃថ្លៃពេក'",
         prompt: "ភ្ញៀវចាប់អារម្មណ៍ចង់បាន តែគាត់រុញរាថា៖ 'តម្លៃថ្លៃពេកអូន ចុះថ្លៃតិចបានអត់?' តើត្រូវពន្យល់ប្រៀបធៀបជាមួយផលប៉ះពាល់ទាំង ៥ (ពិសេសការទុកយូររហូតដល់រលាកអាងត្រគាកត្រូវចំណាយលុយវះកាត់ថ្លៃ) និងបិទការលក់យ៉ាងម៉េច?",
       },
       {
-        title: "😨 ខ្លាចប៉ះពាល់ក្រលៀន / ថ្លើម",
+        title: "😨 ខ្លាចប៉ះពាល់ក្រលៀន",
         prompt: "ភ្ញៀវខ្លាចថា៖ 'ញ៉ាំអាហារបំប៉នហ្នឹងយូរទៅ ខ្លាចខូចក្រលៀន ឬប៉ះពាល់ថ្លើមណាស់' តើត្រូវពន្យល់តាមក្បួនសុខភាពយ៉ាងម៉េចឱ្យគាត់អស់បារម្ភ?",
       },
       {
-        title: "🤔 'ចាំគិតមើលសិន / ចាំសួរស្វាមីសិន'",
+        title: "🤔 'ចាំគិត / សួរស្វាមីសិន'",
         prompt: "ភ្ញៀវសួរនាំចប់សព្វគ្រប់ហើយ តែគាត់ឆ្លើយថា៖ 'ចាំបងគិតមើលសិន / ចាំសួរគ្រួសារសិន' តើត្រូវឆ្លើយតបបែបណាដោយទន់ភ្លន់តែចាក់ចំបេះដូង (ផលប៉ះពាល់ជីវិតប្តីប្រពន្ធ និងសុខភាព) ឱ្យគាត់សម្រេចចិត្តកម្ម៉ង់ថ្ងៃនេះ?",
       },
       {
-        title: "📦 ចង់ទិញតែ ១ ប្រអប់ឱ្យជាដាច់",
+        title: "📦 ចង់ទិញតែ ១ ប្រអប់",
         prompt: "ភ្ញៀវមានបញ្ហារ៉ាំរ៉ៃយូរឆ្នាំ តែគាត់សួរថា៖ 'បងយកតែ ១ ប្រអប់សិនបានអត់? ញ៉ាំ ១ ប្រអប់ហ្នឹងដឹងតែជាដាច់មែនអត់?' តើត្រូវពន្យល់យ៉ាងម៉េចឱ្យគាត់យល់ពីដំណាក់កាលសម្អាត និងប៉ូវស្បូន?",
       },
     ],
   },
   {
     id: "followup_reactions",
-    label: "🥗 ថែទាំ ៣៦០° & ភ្ញៀវកំពុងប្រើ (មេរៀន ១៦-១៧)",
-    desc: "អាហារគួរតម/គួរញ៉ាំ និងអាការៈពេលប្រើ",
+    label: "🥗 ថែទាំ & កំពុងប្រើ",
+    desc: "អាហារតម/ញ៉ាំ & អាការៈ",
     scenarios: [
       {
-        title: "🚫 បញ្ជីអាហារគួរតម ៥ មុខ & គួរញ៉ាំ ៥ មុខ (មេរៀន ១៦-១៧)",
+        title: "🚫 អាហារតម & គួរញ៉ាំ",
         prompt: "ភ្ញៀវទើបទិញ Emmi ហើយសួរថា៖ 'អូន ពេលកំពុងញ៉ាំ Emmi តើបងត្រូវតមអាហារអ្វីខ្លះ និងគួរញ៉ាំអាហារអ្វីខ្លះដើម្បីឱ្យឆាប់ជាដាច់?' សូមរៀបចំសារណែនាំតាមមេរៀនទី ១៦ និង ១៧។",
       },
       {
-        title: "⚠️ ប្រើ ៣-៥ថ្ងៃ ធ្លាក់សចេញច្រើនជាងមុន",
+        title: "⚠️ ប្រើ ៤ថ្ងៃ ធ្លាក់សច្រើន",
         prompt: "ភ្ញៀវទិញ Emmi យកទៅញ៉ាំបាន ៤ ថ្ងៃ គាត់ឆាតមកទាំងភ័យថា៖ 'អូន! ម៉េចបងញ៉ាំទៅឃើញធ្លាក់សចេញមកច្រើនជាងមុនអញ្ចឹង? តិចអត់ត្រូវថ្នាំទៅ?' តើត្រូវពន្យល់ពីដំណាក់កាលលាងសម្អាតស្បូនយ៉ាងម៉េចឱ្យគាត់សប្បាយចិត្តប្រើបន្ត?",
       },
       {
-        title: "🩸 ញ៉ាំហើយរដូវមកលឿន ឬធ្លាក់ឈាមកកខ្មៅ",
+        title: "🩸 ធ្លាក់ឈាមរដូវដុំៗខ្មៅ",
         prompt: "ភ្ញៀវញ៉ាំ Emmi ហើយប្រាប់ថា ខែនេះរដូវគាត់មកលឿនជាងមុន ហើយមានធ្លាក់ឈាមដុំៗខ្មៅកក តើត្រូវពន្យល់ពីការបញ្ចេញឈាមចាស់កកស្ទះក្នុងស្បូនយ៉ាងដូចម្តេច?",
       },
       {
-        title: "📦 ញ៉ាំជិតអស់ ១ ប្រអប់ មិនទាន់បាត់ដាច់",
+        title: "📦 អស់ ១ប្រអប់ មិនទាន់ដាច់",
         prompt: "ភ្ញៀវប្រាប់ថា៖ 'បងញ៉ាំជិតអស់ ១ ប្រអប់ហើយ គ្រាន់តែធូរជាងមុនតិច តែអត់ទាន់បាត់ដាច់ទេ (ព្រោះគាត់នៅញ៉ាំផ្អែម និងប្រហុកជ្រក់)' តើត្រូវពន្យល់លើកទឹកចិត្ត ណែនាំឱ្យតមអាហារតាមមេរៀនទី ១៦ និងបន្តឈុតទី ២ យ៉ាងម៉េច?",
       },
       {
-        title: "💧 នោមញឹក នោមទាស់ & ចុកចង្កេះ (Kidney Pro)",
+        title: "💧 នោមញឹក & ចុកចង្កេះ",
         prompt: "ភ្ញៀវមានបញ្ហានោមញឹកពេលយប់ នោមទាស់ និងចុករោយចង្កេះ តើត្រូវណែនាំ Kidney Pro និង Pro D.O យ៉ាងដូចម្តេច?",
       },
     ],
@@ -3754,25 +3754,25 @@ export default function EmmiCRMApp() {
       AI_CONSULTATION_CATEGORIES[0];
 
     return (
-      <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-white via-pink-50/40 to-[#fbe9ee]/50 dark:from-[#2a111a] dark:via-[#32131f] dark:to-[#220d15] border border-pink-200/90 dark:border-pink-900/40 shadow-sm space-y-4">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3">
+      <div className="p-3 sm:p-5 rounded-3xl bg-gradient-to-br from-white via-pink-50/40 to-[#fbe9ee]/50 dark:from-[#2a111a] dark:via-[#32131f] dark:to-[#220d15] border border-pink-200/90 dark:border-pink-900/40 shadow-sm space-y-2.5 sm:space-y-3.5">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#7b1e3a] to-[#d6336c] text-white flex items-center justify-center shadow-md shadow-pink-500/20 shrink-0">
-              <Bot size={22} />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-[#7b1e3a] to-[#d6336c] text-white flex items-center justify-center shadow-sm shrink-0">
+              <Bot size={19} />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm sm:text-base font-black text-gray-900 dark:text-white flex items-center gap-1.5">
-                  <span>ជំនួយការ AI ប្រឹក្សា & ជួយឆ្លើយសំណួរពិបាកៗ</span>
-                  <Sparkles size={15} className="text-amber-500" />
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h3 className="text-xs sm:text-base font-black text-gray-900 dark:text-white flex items-center gap-1">
+                  <span>ជំនួយការ AI ប្រឹក្សា & ឆ្លើយភ្ញៀវ</span>
+                  <Sparkles size={13} className="text-amber-500 shrink-0" />
                 </h3>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950/60 text-[#7b1e3a] dark:text-pink-300 border border-pink-200 dark:border-pink-800">
-                  📖 សៀវភៅរោគស្ត្រី ១៧ មេរៀន (អគ្គនាយក វណ្ណ ស៊ីថា)
+                <span className="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full bg-pink-100 dark:bg-pink-950/60 text-[#7b1e3a] dark:text-pink-300 border border-pink-200 dark:border-pink-800">
+                  📖 ១៧ មេរៀនរោគស្ត្រី
                 </span>
               </div>
-              <p className="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">
-                «អ្នកលក់ឆ្នើម គឺជាអ្នកលក់ដែលមានជំនាញក្នុងវិស័យដែលខ្លួនលក់» • ពេលពិបាកឆ្លើយជាមួយភ្ញៀវ គ្រាន់តែចុចជ្រើសរើស ឬ Paste សំណួរភ្ញៀវចូលទីនេះ
+              <p className="text-[10px] sm:text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                ជួយឆ្លើយសំណួរពិបាកៗ • ចុចជ្រើសរើស ឬ Paste សំណួរភ្ញៀវចូលទីនេះ
               </p>
             </div>
           </div>
@@ -3801,15 +3801,15 @@ export default function EmmiCRMApp() {
                   key={cat.id}
                   type="button"
                   onClick={() => setAiCategory(cat.id)}
-                  className={`px-2.5 py-2 rounded-xl text-left transition-all cursor-pointer border ${
+                  className={`px-2.5 py-1.5 sm:py-2 rounded-xl text-left transition-all cursor-pointer border ${
                     isSelected
                       ? "bg-[#7b1e3a] text-white border-[#7b1e3a] shadow-xs"
                       : "bg-white/90 dark:bg-white/5 text-gray-700 dark:text-gray-200 border-pink-100 dark:border-white/10 hover:bg-pink-50 dark:hover:bg-white/10"
                   }`}
                 >
-                  <p className="text-xs font-bold truncate">{cat.label}</p>
+                  <p className="text-[11px] sm:text-xs font-bold leading-snug">{cat.label}</p>
                   <p
-                    className={`text-[10px] truncate mt-0.5 ${
+                    className={`text-[9px] sm:text-[10px] truncate mt-0.5 ${
                       isSelected ? "text-pink-100" : "text-gray-400 dark:text-gray-400"
                     }`}
                   >
@@ -3820,20 +3820,20 @@ export default function EmmiCRMApp() {
             })}
           </div>
 
-          {/* Scenarios inside active category */}
-          <div className="p-3 rounded-2xl bg-white/80 dark:bg-white/5 border border-pink-100/90 dark:border-white/10">
-            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-2 flex items-center gap-1">
-              <HeartPulse size={12} className="text-[#7b1e3a] dark:text-pink-400" />
-              <span>សំណួរដែលអ្នកលក់ឧស្សាហ៍ពិបាកឆ្លើយ ({activeCatObj.label}) — ចុចជ្រើសរើស៖</span>
+          {/* Scenarios inside active category - 2-column compact grid on mobile */}
+          <div className="p-2.5 sm:p-3 rounded-2xl bg-white/85 dark:bg-white/5 border border-pink-100/90 dark:border-white/10">
+            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1">
+              <HeartPulse size={11} className="text-[#7b1e3a] dark:text-pink-400 shrink-0" />
+              <span className="truncate">ចុចរើសសំណួររហ័ស ({activeCatObj.label})៖</span>
             </p>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5">
               {activeCatObj.scenarios.map((sc, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => handleAskAi(sc.prompt)}
                   disabled={aiLoading}
-                  className="px-2.5 py-1.5 rounded-xl bg-[#fbe9ee]/70 dark:bg-pink-950/40 hover:bg-[#7b1e3a] hover:text-white text-gray-800 dark:text-gray-100 text-xs font-semibold border border-pink-200/80 dark:border-pink-800/40 transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                  className="px-2 py-1.5 sm:px-2.5 rounded-xl bg-[#fbe9ee]/70 dark:bg-pink-950/40 hover:bg-[#7b1e3a] hover:text-white text-gray-800 dark:text-gray-100 text-[11px] sm:text-xs font-semibold border border-pink-200/80 dark:border-pink-800/40 transition-all active:scale-95 cursor-pointer disabled:opacity-50 text-left truncate"
                 >
                   {sc.title}
                 </button>
@@ -3846,42 +3846,42 @@ export default function EmmiCRMApp() {
         <div className="space-y-2">
           <div className="relative">
             <textarea
-              rows={3}
+              rows={2}
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
-              placeholder="កន្លែងជួយអ្នកលក់៖ វាយសំណួរដែលភ្ញៀវសួរ ឬ Copy សារភ្ញៀវពីក្នុង Chat មកដាក់ទីនេះ... (ឧ. ភ្ញៀវសួរថា មានគីសស្បូនញ៉ាំ Emmi បានអត់? ឬ ភ្ញៀវញ៉ាំបាន ៤ថ្ងៃធ្លាក់សច្រើនជាងមុន...)"
-              className="w-full p-3 pr-8 rounded-2xl border border-pink-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a] shadow-xs resize-none"
+              placeholder="វាយ ឬ Paste សំណួរដែលភ្ញៀវសួរនៅទីនេះ..."
+              className="w-full p-2.5 pr-8 rounded-2xl border border-pink-200 dark:border-white/10 bg-white dark:bg-[#341420] text-xs sm:text-sm text-gray-800 dark:text-gray-100 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7b1e3a] shadow-xs resize-none"
             />
             {aiPrompt && (
               <button
                 type="button"
                 onClick={() => setAiPrompt("")}
-                className="absolute top-2.5 right-2.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs px-1.5 py-0.5 rounded-md hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer"
+                className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xs px-1.5 py-0.5 rounded-md hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer"
               >
                 ✕
               </button>
             )}
           </div>
 
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <span className="text-[10px] text-gray-500 dark:text-gray-400">
-              💡 AI នឹងពន្យល់អ្នកលក់ + បង្កើតសារឆ្លើយតបឱ្យ Copy ផ្ញើទៅភ្ញៀវភ្លាមៗ
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+              💡 ពន្យល់អ្នកលក់ + សារឱ្យ Copy ផ្ញើទៅភ្ញៀវ
             </span>
             <button
               type="button"
               onClick={() => handleAskAi()}
               disabled={aiLoading || !aiPrompt.trim()}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#7b1e3a] to-[#d6336c] hover:from-[#66162e] hover:to-[#b82658] active:scale-95 text-white text-xs font-bold shadow-md shadow-pink-600/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ml-auto"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#7b1e3a] to-[#d6336c] hover:from-[#66162e] hover:to-[#b82658] active:scale-95 text-white text-xs font-bold shadow-md shadow-pink-600/20 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
             >
               {aiLoading ? (
                 <>
-                  <RefreshCw size={14} className="animate-spin" />
-                  <span>កំពុងរៀបចំចម្លើយជូនអ្នកលក់...</span>
+                  <RefreshCw size={13} className="animate-spin" />
+                  <span>កំពុងរៀបចំ...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles size={14} />
-                  <span>ឱ្យ AI ជួយឆ្លើយភ្ញៀវ</span>
+                  <Sparkles size={13} />
+                  <span>ឱ្យ AI ជួយឆ្លើយ</span>
                 </>
               )}
             </button>
@@ -4672,26 +4672,26 @@ export default function EmmiCRMApp() {
         )}
 
         {/* Top App Header */}
-        <header className="sticky top-0 z-30 bg-[#fcf8f9]/95 dark:bg-[#1c0a10]/95 backdrop-blur-md py-3 border-b border-[#eadadd]/60 dark:border-white/10 flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 bg-[#fcf8f9]/95 dark:bg-[#1c0a10]/95 backdrop-blur-md py-2.5 sm:py-3 border-b border-[#eadadd]/60 dark:border-white/10 flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <button
               onClick={() => setDrawerOpen(true)}
-              className="w-10 h-10 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 flex items-center justify-center text-[#7b1e3a] dark:text-pink-300 shadow-sm"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 flex items-center justify-center text-[#7b1e3a] dark:text-pink-300 shadow-sm shrink-0"
             >
-              <Menu size={20} />
+              <Menu size={18} />
             </button>
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full overflow-hidden border border-pink-200 dark:border-white/20">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden border border-pink-200 dark:border-white/20 shrink-0">
                 <img src="/emmi-logo.png" alt="EMMI" className="w-full h-full object-cover" />
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-[#a62b4e] uppercase tracking-wider">
+              <div className="min-w-0">
+                <p className="text-[9px] sm:text-[10px] font-bold text-[#a62b4e] uppercase tracking-wider truncate">
                   EMMI SALES CRM
                 </p>
-                <p className="text-xs font-black text-[#230c14] dark:text-white">
+                <p className="text-[11px] sm:text-xs font-black text-[#230c14] dark:text-white truncate">
                   {activeTab === "dashboard"
                     ? currentRole === "admin"
-                      ? "ផ្ទាំងគ្រប់គ្រង Admin"
+                      ? "ផ្ទាំង Admin"
                       : "ទំព័រដើម"
                     : activeTab === "ranking"
                     ? "ចំណាត់ថ្នាក់"
@@ -4703,19 +4703,19 @@ export default function EmmiCRMApp() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={fetchData}
               disabled={loading}
-              className="w-9 h-9 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 flex items-center justify-center text-gray-600 dark:text-gray-300 shadow-sm"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 flex items-center justify-center text-gray-600 dark:text-gray-300 shadow-sm shrink-0"
               title="ទាញយកទិន្នន័យថ្មី"
             >
-              <RefreshCw size={15} className={loading ? "animate-spin text-[#7b1e3a]" : ""} />
+              <RefreshCw size={14} className={loading ? "animate-spin text-[#7b1e3a]" : ""} />
             </button>
 
-            <div className="h-9 px-3 rounded-xl bg-[#fbe9ee] dark:bg-[#3e1321] border border-[#7b1e3a]/20 flex items-center gap-2 text-xs font-bold text-[#7b1e3a] dark:text-pink-300 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span>{currentUser}</span>
+            <div className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-[#fbe9ee] dark:bg-[#3e1321] border border-[#7b1e3a]/20 flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-[#7b1e3a] dark:text-pink-300 shadow-sm max-w-[130px] sm:max-w-none">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 shrink-0"></span>
+              <span className="truncate">{currentUser}</span>
             </div>
           </div>
         </header>
@@ -4778,101 +4778,7 @@ export default function EmmiCRMApp() {
               {/* 2. EMMI AI Sales & Gynecologist Specialist */}
               {renderAiSalesAssistant()}
 
-              {/* 4. Action Shortcut Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {/* Shortcut 1: Today Follow-Up */}
-                <div
-                  onClick={() => {
-                    setActiveTab("customers");
-                    setCustomerFilterTab("today_followup");
-                  }}
-                  className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm flex items-center justify-between cursor-pointer hover:border-[#7b1e3a] transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-pink-500/10 text-[#7b1e3a] dark:text-pink-300 flex items-center justify-center">
-                      <Clock size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-[#230c14] dark:text-white">
-                        ត្រូវ Follow Up ថ្ងៃនេះ ({customerCounts.today} នាក់)
-                      </h4>
-                      <p className="text-[11px] text-gray-500">គិតតាម ៧ថ្ងៃ + ជិតអស់</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={18} className="text-gray-400 shrink-0" />
-                </div>
-
-                {/* Shortcut 2: Overdue */}
-                <div
-                  onClick={() => {
-                    setActiveTab("customers");
-                    setCustomerFilterTab("overdue");
-                  }}
-                  className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-red-200 dark:border-red-900/40 shadow-sm flex items-center justify-between cursor-pointer hover:border-red-500 transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center">
-                      <AlertCircle size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-red-600 dark:text-red-400">
-                        ⚠️ ហួសថ្ងៃ ({customerCounts.overdue} នាក់)
-                      </h4>
-                      <p className="text-[11px] text-gray-500">ហួសថ្ងៃកំណត់ follow-up</p>
-                    </div>
-                  </div>
-                  <ChevronRight size={18} className="text-gray-400 shrink-0" />
-                </div>
-
-                {/* Shortcut 3: Daily Report */}
-                <div
-                  onClick={() => setActiveTab("reports")}
-                  className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm flex items-center justify-between cursor-pointer hover:border-[#7b1e3a] transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-pink-500/10 text-[#7b1e3a] dark:text-pink-300 flex items-center justify-center">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-[#230c14] dark:text-white">
-                        របាយការណ៍ថ្ងៃនេះ ({datesInfo.todayStr})
-                      </h4>
-                      <p className="text-[11px] text-gray-500">
-                        {todayMyReport ? "✅ បានបំពេញរួច" : "⚠️ មិនទាន់បានបំពេញ Daily Report ទេ"}
-                      </p>
-                    </div>
-                  </div>
-                  <button className="px-3 py-1.5 rounded-xl bg-[#7b1e3a] text-white text-xs font-bold shadow-sm shrink-0">
-                    {todayMyReport ? "មើល" : "បំពេញ"}
-                  </button>
-                </div>
-              </div>
-
-              {/* 4. Team Summary & Leaderboard Link Card */}
-              <div
-                onClick={() => setActiveTab("ranking")}
-                className="p-5 rounded-3xl bg-gradient-to-r from-[#7b1e3a] to-[#a62b4e] text-white shadow-lg cursor-pointer hover:shadow-xl transition-all flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white shrink-0">
-                    <Trophy size={24} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm sm:text-base flex items-center gap-2">
-                      <span>ចំណាត់ថ្នាក់អ្នកលក់ & ទម្លាក់ Report</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 font-black">
-                        ថ្មី
-                      </span>
-                    </h3>
-                    <p className="text-xs text-pink-100 mt-0.5">
-                      មើល Rank ផលិតផល (គោលដៅ 500 ប្រអប់) និងអ្នកទម្លាក់ Report លឿនជាងគេ →
-                    </p>
-                  </div>
-                </div>
-                <ChevronRight size={22} className="text-white/80 shrink-0" />
-              </div>
-
-              {/* 5. Interactive Seller Skill Quiz (តេស្តសាកល្បងសមត្ថភាពអ្នកលក់ ៤ ជម្រើស មិនជាន់គ្នា + ដាក់ពិន្ទុ) */}
+              {/* 3. Interactive Seller Skill Quiz (តេស្តសាកល្បងសមត្ថភាពអ្នកលក់ ៤ ជម្រើស មិនជាន់គ្នា + ដាក់ពិន្ទុ) */}
               <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-white/5 border border-[#eadadd] dark:border-white/10 shadow-sm space-y-4">
                 {/* Quiz Header & Scoreboard */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-gray-100 dark:border-white/10">
