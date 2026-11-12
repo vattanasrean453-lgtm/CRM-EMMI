@@ -67,6 +67,18 @@ const QUIZ_SYSTEM_INSTRUCTION = `
 - ករណីពិគ្រោះយោបល់ជាក់ស្តែងជាមួយភ្ញៀវ (ភ្ញៀវថាថ្លៃ, ភ្ញៀវខ្លាចប៉ះពាល់ក្រលៀន, ភ្ញៀវបំបៅដោះកូន, ភ្ញៀវប្រើ ៣-៥ ថ្ងៃធ្លាក់សច្រើនជាងមុន, Kidney Pro & Pro D.O)។
 
 ⚠️ បម្រាមដាច់ខាត៖ ហាមប្រើអក្សរថៃ (Thai script) សូម្បីតែ ១ តួអក្សរ! ត្រូវសរសេរជាអក្សរខ្មែរសុទ្ធ ១០០%។
+អ្នកត្រូវឆ្លើយតបជាទម្រង់ JSON Object តែមួយគត់ដូចខាងក្រោម៖
+{
+  "questions": [
+    {
+      "lesson": "មេរៀនទី ...",
+      "question": "សំណួរ...",
+      "options": ["ជម្រើស ក", "ជម្រើស ខ", "ជម្រើស គ", "ជម្រើស ឃ"],
+      "correctIndex": 0,
+      "explanation": "ការពន្យល់..."
+    }
+  ]
+}
 `;
 
 export async function POST(req: Request) {
@@ -89,11 +101,16 @@ export async function POST(req: Request) {
     const randomSeed = Math.floor(Math.random() * 1000000);
     const userPrompt = `សូមបង្កើតសំណួរតេស្តសមត្ថភាពអ្នកលក់ថ្មីៗចំនួន ៥ សំណួរ ដែលឆ្លាស់មេរៀនគ្នា (មិនជាន់ប្រធានបទគ្នា និងមានស្ថានភាពភ្ញៀវសួរជាក់ស្តែងប្លែកៗគ្នា) [Seed: ${randomSeed}]។${avoidListText}`;
 
-    const models = ["gemini-3.5-flash", "gemini-3-flash-preview", "gemini-3.5-flash-lite"];
+    const models = [
+      "gemini-3.5-flash-lite",
+      "gemini-3.5-flash",
+      "gemini-3-flash-preview",
+      "gemini-3.8-flash",
+    ];
 
     for (const modelName of models) {
       try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey.trim()}`;
         const response = await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -112,32 +129,6 @@ export async function POST(req: Request) {
               topP: 0.95,
               maxOutputTokens: 4096,
               responseMimeType: "application/json",
-              thinkingConfig: {
-                thinkingBudget: 0,
-              },
-              responseSchema: {
-                type: "OBJECT",
-                properties: {
-                  questions: {
-                    type: "ARRAY",
-                    items: {
-                      type: "OBJECT",
-                      properties: {
-                        lesson: { type: "STRING" },
-                        question: { type: "STRING" },
-                        options: {
-                          type: "ARRAY",
-                          items: { type: "STRING" },
-                        },
-                        correctIndex: { type: "INTEGER" },
-                        explanation: { type: "STRING" },
-                      },
-                      required: ["lesson", "question", "options", "correctIndex", "explanation"],
-                    },
-                  },
-                },
-                required: ["questions"],
-              },
             },
           }),
         });
